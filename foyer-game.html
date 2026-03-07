@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Foyer | Mystery Chamber</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="index.css" />
+</head>
+<body class="game-page">
+<div class="game-container">
+    <!-- Top Header Bar -->
+    <header class="game-header">
+        <div class="game-header-left">
+            <div class="game-logo">
+                <div class="logo-icon-small">🚪</div>
+                <div class="game-title-info">
+                    <h1 class="game-title">The Foyer</h1>
+                    <span class="game-subtitle">ESCAPE THE MANOR: CHAPTER 1</span>
+                </div>
+            </div>
+        </div>
+        <div class="game-header-right">
+            <div class="timer">
+                <span class="timer-icon">🕐</span>
+                <span class="timer-value">14:22</span>
+            </div>
+            <button class="icon-btn-game hint-btn">💡</button>
+            <button class="icon-btn-game settings-btn">⚙️</button>
+        </div>
+    </header>
+
+    <!-- Main Game Area -->
+    <main class="game-main">
+        <!-- Room View with Hotspots -->
+        <div class="room-view">
+            <div class="room-scene">
+                <img src="assets/images/Foyer.png" alt="The Foyer" class="room-image" />
+
+                <!-- Hotspot 1: Torn Note -->
+                <input type="checkbox" id="hotspot1" class="hotspot-toggle" />
+                <label for="hotspot1" class="hotspot" style="top: 45%; left: 40%;">
+                    <span class="hotspot-pulse"></span>
+                </label>
+                <div class="clue-modal clue-modal-1">
+                    <label for="hotspot1" class="clue-modal-overlay"></label>
+                    <div class="clue-modal-content">
+                        <div class="clue-image">
+                            <img src="https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=600&h=400&fit=crop" alt="Torn Note" />
+                        </div>
+                        <div class="clue-details">
+                            <div class="clue-found-label">
+                                <span class="found-icon">🔍</span>
+                                <span>FOUND IN LOOSE RUG</span>
+                            </div>
+                            <h2 class="clue-title">Torn Note</h2>
+                            <p class="clue-description">
+                                A scrap of parchment, weathered by age. The edges are charred, and the ink appears frantically applied.
+                            </p>
+                            <div class="clue-text">
+                                <em>"The sequence remains unchanged. Under the moonlight, the numbers 4-8-1 glow with a terrible light..."</em>
+                            </div>
+                            <label for="hotspot1" class="close-clue-btn">Close</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hotspot 2: Old Key -->
+                <input type="checkbox" id="hotspot2" class="hotspot-toggle" />
+                <label for="hotspot2" class="hotspot" style="top: 60%; left: 25%;">
+                    <span class="hotspot-pulse"></span>
+                </label>
+                <div class="clue-modal clue-modal-2">
+                    <label for="hotspot2" class="clue-modal-overlay"></label>
+                    <div class="clue-modal-content">
+                        <div class="clue-image">
+                            <img src="https://images.unsplash.com/photo-1582139329536-e7284fece509?w=600&h=400&fit=crop" alt="Old Key" />
+                        </div>
+                        <div class="clue-details">
+                            <div class="clue-found-label">
+                                <span class="found-icon">🔍</span>
+                                <span>FOUND UNDER CARPET</span>
+                            </div>
+                            <h2 class="clue-title">Brass Key</h2>
+                            <p class="clue-description">
+                                An ornate brass key, tarnished with age. Strange symbols are etched along its shaft.
+                            </p>
+                            <div class="clue-text">
+                                <em>"This key feels unusually cold to the touch. It doesn't seem to fit the main door..."</em>
+                            </div>
+                            <label for="hotspot2" class="close-clue-btn">Close</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hotspot 3: Dusty Lamp -->
+                <input type="checkbox" id="hotspot3" class="hotspot-toggle" />
+                <label for="hotspot3" class="hotspot" style="top: 30%; left: 70%;">
+                    <span class="hotspot-pulse"></span>
+                </label>
+                <div class="clue-modal clue-modal-3">
+                    <label for="hotspot3" class="clue-modal-overlay"></label>
+                    <div class="clue-modal-content">
+                        <div class="clue-image">
+                            <img src="https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=600&h=400&fit=crop" alt="Antique Lamp" />
+                        </div>
+                        <div class="clue-details">
+                            <div class="clue-found-label">
+                                <span class="found-icon">🔍</span>
+                                <span>FOUND ON SIDE TABLE</span>
+                            </div>
+                            <h2 class="clue-title">Antique Lamp</h2>
+                            <p class="clue-description">
+                                A Victorian oil lamp covered in decades of dust. When tilted, something rattles inside.
+                            </p>
+                            <div class="clue-text">
+                                <em>"The glass is foggy, but you can make out numbers scratched on the inside: 4... 8... 1..."</em>
+                            </div>
+                            <label for="hotspot3" class="close-clue-btn">Close</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Status Bar -->
+        <div class="status-bar">
+            <!-- Inventory -->
+            <div class="inventory">
+                <div class="inventory-label">INVENTORY</div>
+                <div class="inventory-items">
+                    <div class="inventory-slot active" title="Brass Key">
+                        <div class="item-icon">🔑</div>
+                    </div>
+                    <div class="inventory-slot" title="Flask - Not yet found">
+                        <div class="item-icon dim">🧪</div>
+                    </div>
+                    <div class="inventory-slot empty"></div>
+                    <div class="inventory-slot empty"></div>
+                    <div class="inventory-slot empty"></div>
+                </div>
+            </div>
+
+            <!-- Status Message -->
+            <div class="status-message">
+                <div class="status-icon">🚪</div>
+                <div>
+                    <p class="status-text">
+                        The air is heavy with the scent of old wood and metallic oxidation. You need to find a way through that door.
+                    </p>
+                    <p class="status-subtext">STATUS: INVESTIGATING</p>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="action-buttons">
+                <button class="action-btn hint-action">
+                    <span>💡</span>
+                    <span>HINT</span>
+                </button>
+                <button class="action-btn menu-action">
+                    <span>📋</span>
+                    <span>MENU</span>
+                </button>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>
