@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Grandfather Clock | Mystery Chamber</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="index.css" />
+    <style>
+        /* Clock Investigation Scene */
+        .clock-scene-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .clock-image-layer {
+            position: relative;
+            width: 95%;
+            height: 95%;
+            max-width: 1200px;
+            max-height: 850px;
+            background: radial-gradient(circle at center, #2a2520 0%, #0a0a0a 100%);
+            border-radius: 8px;
+            box-shadow: 0 0 100px rgba(0, 0, 0, 0.95), inset 0 0 40px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 4rem;
+            padding: 2rem;
+            padding-top: 5rem;
+        }
+
+        .scene-header {
+            position: absolute;
+            top: 1.5rem;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .investigation-tag {
+            color: var(--primary);
+            font-size: 0.75rem;
+            font-weight: bold;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .investigation-tag::before {
+            content: '🔍';
+            font-size: 1rem;
+        }
+
+        .investigation-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+            color: var(--text-white);
+        }
+
+        /* Clock Face Container */
+        .clock-container {
+            position: relative;
+            width: 90%;
+            max-width: 450px;
+            aspect-ratio: 1 / 1;
+            --radius: calc(min(90vw, 450px) * 0.38);
+            /* Dynamic radius base */
+            background: radial-gradient(circle, #f5f5dc 0%, #e8e8d0 100%);
+            border-radius: 50%;
+            border: clamp(10px, 3vw, 20px) solid #2a1f0b;
+            box-shadow:
+                0 0 0 8px #4a3f2b,
+                0 30px 80px rgba(0, 0, 0, 0.8),
+                inset 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Roman Numerals */
+        .clock-numbers {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .numeral {
+            position: absolute;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            font-weight: bold;
+            color: #2a1f0b;
+            font-family: 'Times New Roman', serif;
+            top: 50%;
+            left: 50%;
+            margin: 0;
+            transform-origin: center center;
+        }
+
+        /* Perfect geometry positioning */
+        .numeral:nth-child(1) {
+            transform: translate(-50%, -50%) rotate(0deg) translateY(calc(-1 * var(--radius))) rotate(0deg);
+            content: 'XII';
+        }
+
+        .numeral:nth-child(2) {
+            transform: translate(-50%, -50%) rotate(30deg) translateY(calc(-1 * var(--radius))) rotate(-30deg);
+        }
+
+        .numeral:nth-child(3) {
+            transform: translate(-50%, -50%) rotate(60deg) translateY(calc(-1 * var(--radius))) rotate(-60deg);
+        }
+
+        .numeral:nth-child(4) {
+            transform: translate(-50%, -50%) rotate(90deg) translateY(calc(-1 * var(--radius))) rotate(-90deg);
+        }
+
+        .numeral:nth-child(5) {
+            transform: translate(-50%, -50%) rotate(120deg) translateY(calc(-1 * var(--radius))) rotate(-120deg);
+        }
+
+        .numeral:nth-child(6) {
+            transform: translate(-50%, -50%) rotate(150deg) translateY(calc(-1 * var(--radius))) rotate(-150deg);
+        }
+
+        .numeral:nth-child(7) {
+            transform: translate(-50%, -50%) rotate(180deg) translateY(calc(-1 * var(--radius))) rotate(-180deg);
+        }
+
+        .numeral:nth-child(8) {
+            transform: translate(-50%, -50%) rotate(210deg) translateY(calc(-1 * var(--radius))) rotate(-210deg);
+        }
+
+        .numeral:nth-child(9) {
+            transform: translate(-50%, -50%) rotate(240deg) translateY(calc(-1 * var(--radius))) rotate(-240deg);
+        }
+
+        .numeral:nth-child(10) {
+            transform: translate(-50%, -50%) rotate(270deg) translateY(calc(-1 * var(--radius))) rotate(-270deg);
+        }
+
+        .numeral:nth-child(11) {
+            transform: translate(-50%, -50%) rotate(300deg) translateY(calc(-1 * var(--radius))) rotate(-300deg);
+        }
+
+        .numeral:nth-child(12) {
+            transform: translate(-50%, -50%) rotate(330deg) translateY(calc(-1 * var(--radius))) rotate(-330deg);
+        }
+
+        /* Integrated Glowing Clues on Face (I=2, III=4, VIII=9) */
+        .numeral:nth-child(2),
+        .numeral:nth-child(4),
+        .numeral:nth-child(9) {
+            color: var(--primary);
+            text-shadow: 0 0 15px rgba(232, 186, 48, 0.8), 0 0 30px rgba(232, 186, 48, 1);
+            animation: highlightPulse 2s infinite;
+        }
+
+        /* Center Hub */
+        .clock-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, #2a1f0b 0%, #1a1308 100%);
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+            z-index: 10;
+        }
+
+        .clock-center::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, var(--primary) 0%, #d4a520 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(232, 186, 48, 0.6);
+        }
+
+        /* Clock Hands - Frozen at 3, 1, 8 */
+        .clock-hand {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            background: linear-gradient(to top, #2a1f0b 0%, #1a1308 100%);
+            border-radius: 4px 4px 0 0;
+            box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Hour Hand - Points slightly past III (3:05 = 93 degrees) */
+        .hour-hand {
+            width: clamp(8px, 2vw, 12px);
+            height: clamp(80px, 15vw, 120px);
+            transform: translateX(-50%) rotate(93deg);
+            z-index: 3;
+            background: linear-gradient(to top, var(--primary) 0%, #d4a520 100%);
+        }
+
+        /* Minute Hand - Points exactly to I (5 past = 30 degrees) */
+        .minute-hand {
+            width: clamp(6px, 1.5vw, 10px);
+            height: clamp(100px, 20vw, 160px);
+            transform: translateX(-50%) rotate(30deg);
+            z-index: 2;
+        }
+
+        /* Second Hand - Points exactly to VIII (40s = 240 degrees) */
+        .second-hand {
+            width: clamp(2px, 0.5vw, 4px);
+            height: clamp(120px, 25vw, 180px);
+            transform: translateX(-50%) rotate(240deg);
+            z-index: 1;
+            background: linear-gradient(to top, #8b0000 0%, #660000 100%);
+        }
+
+        /* Animations for Clues */
+        @keyframes highlightPulse {
+
+            0%,
+            100% {
+                text-shadow: 0 0 15px rgba(232, 186, 48, 0.4), 0 0 20px rgba(232, 186, 48, 0.8);
+            }
+
+            50% {
+                text-shadow: 0 0 25px rgba(232, 186, 48, 0.9), 0 0 40px rgba(232, 186, 48, 1);
+            }
+        }
+
+        /* Clue Text */
+        .clue-panel {
+            position: relative;
+            background: rgba(15, 15, 15, 0.95);
+            border: 3px solid var(--primary);
+            border-radius: 1rem;
+            padding: clamp(1rem, 3vw, 2rem) clamp(1.5rem, 4vw, 3rem);
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+        }
+
+        .clue-label {
+            color: var(--primary);
+            font-size: 0.75rem;
+            font-weight: bold;
+            letter-spacing: 0.2em;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .clue-label::before {
+            content: '📜';
+            font-size: 1.2rem;
+        }
+
+        .clue-quote {
+            color: var(--text-white);
+            font-size: 1.5rem;
+            font-style: italic;
+            line-height: 1.6;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .clue-quote::before {
+            content: '"';
+            color: var(--primary);
+            font-size: 3rem;
+            line-height: 0;
+            vertical-align: -0.4rem;
+        }
+
+        .clue-quote::after {
+            content: '"';
+            color: var(--primary);
+            font-size: 3rem;
+            line-height: 0;
+            vertical-align: -0.4rem;
+        }
+
+        .code-display {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .code-digit {
+            width: 70px;
+            height: 70px;
+            background: rgba(232, 186, 48, 0.1);
+            border: 3px solid var(--primary);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            box-shadow: 0 0 20px rgba(232, 186, 48, 0.3);
+            animation: digitReveal 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .code-digit:nth-child(1) {
+            animation-delay: 1s;
+        }
+
+        .code-digit:nth-child(2) {
+            animation-delay: 1.5s;
+        }
+
+        .code-digit:nth-child(3) {
+            animation-delay: 2s;
+        }
+
+        @keyframes digitReveal {
+            to {
+                opacity: 1;
+                transform: scale(1.1);
+            }
+        }
+
+        /* Back Button */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .back-btn,
+        .proceed-btn {
+            padding: 1rem 2rem;
+            background: rgba(232, 186, 48, 0.1);
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .back-btn:hover,
+        .proceed-btn:hover {
+            background: var(--primary);
+            color: var(--background-dark);
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(232, 186, 48, 0.4);
+        }
+
+        .proceed-btn {
+            background: var(--primary);
+            color: var(--background-dark);
+        }
+
+        .proceed-btn:hover {
+            background: rgba(232, 186, 48, 0.9);
+        }
+
+        /* Decorative Elements */
+        .ornament {
+            position: absolute;
+            width: clamp(30px, 8vw, 60px);
+            height: clamp(30px, 8vw, 60px);
+            border: clamp(1px, 0.5vw, 3px) solid #4a3f2b;
+            border-radius: 50%;
+            background: radial-gradient(circle, #2a1f0b 0%, transparent 100%);
+        }
+
+        /* Responsive positioning relative to the container border */
+        .ornament-tl {
+            top: -5%;
+            left: -5%;
+        }
+
+        .ornament-tr {
+            top: -5%;
+            right: -5%;
+        }
+
+        .ornament-bl {
+            bottom: -5%;
+            left: -5%;
+        }
+
+        .ornament-br {
+            bottom: -5%;
+            right: -5%;
+        }
+
+        /* Minute Marks */
+        .minute-marks {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        .minute-mark {
+            position: absolute;
+            width: clamp(2px, 0.5vw, 4px);
+            height: clamp(10px, 3vw, 20px);
+            background: #2a1f0b;
+            top: 50%;
+            left: 50%;
+            margin: 0;
+            border-radius: 2px;
+        }
+
+        .minute-mark:nth-child(1) {
+            transform: translate(-50%, -50%) rotate(30deg) translateY(calc(-1.22 * var(--radius)));
+        }
+
+        .minute-mark:nth-child(2) {
+            transform: translate(-50%, -50%) rotate(60deg) translateY(calc(-1.22 * var(--radius)));
+        }
+
+        .minute-mark:nth-child(3) {
+            transform: translate(-50%, -50%) rotate(120deg) translateY(calc(-1.22 * var(--radius)));
+        }
+
+        .minute-mark:nth-child(4) {
+            transform: translate(-50%, -50%) rotate(150deg) translateY(calc(-1.22 * var(--radius)));
+        }
+
+        .minute-mark:nth-child(5) {
+            transform: translate(-50%, -50%) rotate(210deg) translateY(calc(-1.22 * var(--radius)));
+        }
+
+        .minute-mark:nth-child(6) {
+            transform: translate(-50%, -50%) rotate(240deg) translateY(calc(-1.22 * var(--radius)));
+        }
+
+        .minute-mark:nth-child(7) {
+            transform: translate(-50%, -50%) rotate(300deg) translateY(calc(-1.22 * var(--radius)));
+        }
+
+        .minute-mark:nth-child(8) {
+            transform: translate(-50%, -50%) rotate(330deg) translateY(calc(-1.22 * var(--radius)));
+        }
+    </style>
+</head>
+
+<body>
+    <div class="clock-scene-bg">
+        <div class="clock-image-layer">
+            <!-- Scene Header -->
+            <div class="scene-header">
+                <div class="investigation-tag">INVESTIGATING</div>
+                <h1 class="investigation-title">The Grandfather Clock</h1>
+            </div>
+
+            <!-- Clock Container -->
+            <div class="clock-container">
+                <!-- Ornaments -->
+                <div class="ornament ornament-tl"></div>
+                <div class="ornament ornament-tr"></div>
+                <div class="ornament ornament-bl"></div>
+                <div class="ornament ornament-br"></div>
+
+                <!-- Minute Marks -->
+                <div class="minute-marks">
+                    <div class="minute-mark"></div>
+                    <div class="minute-mark"></div>
+                    <div class="minute-mark"></div>
+                    <div class="minute-mark"></div>
+                    <div class="minute-mark"></div>
+                    <div class="minute-mark"></div>
+                    <div class="minute-mark"></div>
+                    <div class="minute-mark"></div>
+                </div>
+
+                <!-- Clock Numbers -->
+                <div class="clock-numbers">
+                    <div class="numeral">XII</div>
+                    <div class="numeral">I</div>
+                    <div class="numeral">II</div>
+                    <div class="numeral">III</div>
+                    <div class="numeral">IV</div>
+                    <div class="numeral">V</div>
+                    <div class="numeral">VI</div>
+                    <div class="numeral">VII</div>
+                    <div class="numeral">VIII</div>
+                    <div class="numeral">IX</div>
+                    <div class="numeral">X</div>
+                    <div class="numeral">XI</div>
+                </div>
+
+                <!-- Clock Hands (Frozen at 3-1-8) -->
+                <div class="hour-hand clock-hand"></div>
+                <div class="minute-hand clock-hand"></div>
+                <div class="second-hand clock-hand"></div>
+
+                <!-- Center Hub -->
+                <div class="clock-center"></div>
+            </div>
+
+            <!-- Clue Panel -->
+            <div class="clue-panel">
+                <div class="clue-label">DISCOVERED CLUE</div>
+                <div class="clue-quote">Time stands still when the truth is hidden.</div>
+
+                <div class="code-display">
+                    <div class="code-digit">3</div>
+                    <div class="code-digit">1</div>
+                    <div class="code-digit">8</div>
+                </div>
+
+                <div class="action-buttons">
+                    <a href="foyer-lit.html" class="back-btn">← Back to Room</a>
+                    <a href="foyer-code.html" class="proceed-btn">Enter the Code →</a>
+                </div>
+            </div>
+        </div>
+</body>
+
+</html>
