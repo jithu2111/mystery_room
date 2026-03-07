@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Code Entry | Mystery Chamber</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="index.css" />
+    <style>
+        /* Code Entry Scene */
+        .code-scene {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #1a1610 0%, #0a0a08 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .scene-header {
+            position: absolute;
+            top: 2rem;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .action-tag {
+            color: var(--primary);
+            font-size: 0.75rem;
+            font-weight: bold;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        .scene-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+            color: var(--text-white);
+        }
+
+        /* Door Container */
+        .door-container {
+            position: relative;
+            width: 400px;
+            height: 600px;
+            background: linear-gradient(135deg, #2a2520 0%, #1a1510 100%);
+            border: 8px solid #0a0a08;
+            border-radius: 12px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Door Panels */
+        .door-panels {
+            position: absolute;
+            inset: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .door-panel {
+            background: linear-gradient(135deg, #3a2f2b 0%, #2a1f1b 100%);
+            border: 4px solid #1a1308;
+            border-radius: 8px;
+            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Keypad Interface */
+        .keypad-interface {
+            position: relative;
+            z-index: 10;
+            background: rgba(10, 10, 10, 0.95);
+            border: 4px solid var(--primary);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 0 40px rgba(232, 186, 48, 0.5);
+            min-width: 320px;
+        }
+
+        .keypad-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .keypad-title {
+            color: var(--primary);
+            font-size: 1rem;
+            font-weight: bold;
+            letter-spacing: 0.2em;
+            margin-bottom: 1rem;
+        }
+
+        .code-instruction {
+            color: var(--text-gray);
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Success Link directly accessible */
+        #code-success {
+            display: none;
+        }
+
+        .success-link {
+            display: block;
+            padding: 1.25rem 2rem;
+            background: var(--primary);
+            color: var(--background-dark);
+            text-decoration: none;
+            border-radius: 0.75rem;
+            font-weight: bold;
+            font-size: 1.125rem;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(232, 186, 48, 0.4);
+            transition: all 0.3s ease;
+            margin-top: 2rem;
+        }
+
+        .success-link:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 50px rgba(232, 186, 48, 0.6);
+        }
+
+        /* Back Button */
+        .back-link {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(232, 186, 48, 0.1);
+            border: 2px solid rgba(232, 186, 48, 0.3);
+            color: var(--primary);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .back-link:hover {
+            background: rgba(232, 186, 48, 0.2);
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        /* Hint */
+        .hint-text {
+            text-align: center;
+            color: rgba(148, 163, 184, 0.6);
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            font-style: italic;
+        }
+
+        /* Code Display */
+        .code-reveal {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .code-digit {
+            width: 70px;
+            height: 80px;
+            background: rgba(232, 186, 48, 0.1);
+            border: 3px solid var(--primary);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary);
+            box-shadow: 0 0 20px rgba(232, 186, 48, 0.3);
+            animation: digitPulse 2s infinite;
+        }
+
+        .code-digit:nth-child(1) { animation-delay: 0s; }
+        .code-digit:nth-child(2) { animation-delay: 0.3s; }
+        .code-digit:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes digitPulse {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(232, 186, 48, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(232, 186, 48, 0.6);
+            }
+        }
+
+        /* Ambient Effects */
+        .glow {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(232, 186, 48, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: glowPulse 4s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+
+        .solution-text {
+            background: rgba(232, 186, 48, 0.1);
+            border-left: 3px solid var(--primary);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            color: var(--primary);
+            font-style: italic;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="code-scene">
+        <!-- Ambient Glow -->
+        <div class="glow"></div>
+
+        <!-- Back Button -->
+        <a href="foyer-lit.html" class="back-link">← Back to Room</a>
+
+        <!-- Scene Header -->
+        <div class="scene-header">
+            <div class="action-tag">FINAL CHALLENGE</div>
+            <h1 class="scene-title">Enter the Code</h1>
+        </div>
+
+        <!-- Door Container -->
+        <div class="door-container">
+            <div class="door-panels">
+                <div class="door-panel"></div>
+                <div class="door-panel"></div>
+                <div class="door-panel"></div>
+                <div class="door-panel"></div>
+            </div>
+
+            <!-- Keypad Interface -->
+            <div class="keypad-interface">
+                <div class="keypad-header">
+                    <div class="keypad-title">ENTER 3-DIGIT CODE</div>
+                    <div class="code-instruction">The grandfather clock reveals the answer...</div>
+                </div>
+
+                <div class="solution-text">
+                    "Time stands still when the truth is hidden."<br><br>
+                    The clock hands point to: III (3), I (1), and VIII (8)
+                </div>
+
+                <div class="code-reveal">
+                    <div class="code-digit">3</div>
+                    <div class="code-digit">1</div>
+                    <div class="code-digit">8</div>
+                </div>
+
+                <a href="foyer-complete.html" class="success-link">Unlock the Door →</a>
+
+                <div class="hint-text">Click above to proceed with code 3-1-8</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

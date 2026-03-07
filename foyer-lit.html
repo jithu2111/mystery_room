@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Foyer | Mystery Chamber</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="index.css" />
+    <style>
+        /* Lit Foyer Scene Background Container */
+        .lit-scene-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: background 3s ease;
+        }
+
+        .scene-title {
+            position: absolute;
+            top: 2rem;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .chapter-tag {
+            color: var(--primary);
+            font-size: 0.875rem;
+            font-weight: bold;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        .scene-name {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+            color: var(--text-white);
+        }
+
+        .scene-instruction {
+            position: absolute;
+            bottom: 2rem;
+            text-align: center;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            max-width: 600px;
+            padding: 0 2rem;
+            z-index: 10;
+        }
+
+        /* Main Image Container (Letterboxed) */
+        .lit-image-layer {
+            position: relative;
+            /* Aspect ratio 1/1 because Foyer.png is square */
+            aspect-ratio: 1 / 1;
+            width: 100%;
+            /* Constrain to screen size and cap at 800px to preserve clarity */
+            max-width: min(90vh, 100vw, 800px);
+            background-image: url('assets/images/Foyer.png');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            box-shadow: 0 0 100px rgba(0, 0, 0, 0.95), inset 0 0 40px rgba(0, 0, 0, 0.6);
+            border-radius: 8px;
+        }
+
+        /* Interactive Elements Overlay */
+        .foyer-interactive-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+        }
+
+        /* Grandfather Clock (Left Side against Wall) */
+        .grandfather-clock {
+            position: absolute;
+            left: 10%;
+            top: 35%;
+            width: 90px;
+            height: 480px;
+            /* Taller, more imposing */
+            cursor: pointer;
+            transition: all 0.3s ease;
+            filter: drop-shadow(15px 15px 25px rgba(0, 0, 0, 0.9));
+            /* Deep, realistic shadow */
+        }
+
+        .grandfather-clock:hover {
+            transform: scale(1.02);
+            filter: brightness(1.1) drop-shadow(20px 20px 30px rgba(0, 0, 0, 0.95));
+        }
+
+        .clock-top {
+            width: 110px;
+            height: 140px;
+            /* Rich mahogany wood grain */
+            background: linear-gradient(135deg, #3d2b1f 0%, #2c1e16 40%, #1a110b 100%);
+            border: 5px solid #140d08;
+            border-radius: 55px 55px 0 0;
+            position: relative;
+            left: -10px;
+            /* Center relative to body */
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8), inset 0 5px 5px rgba(255, 255, 255, 0.05);
+            /* Beveled edge */
+        }
+
+        .clock-face {
+            position: absolute;
+            top: 55%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #faf0e6 0%, #dfcbb7 80%, #b59b84 100%);
+            /* Aged parchment */
+            border-radius: 50%;
+            border: 4px solid #b8860b;
+            /* Polished brass rim */
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5), 0 5px 10px rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .clock-face::before {
+            content: 'XII';
+            position: absolute;
+            top: 5px;
+            font-size: 0.7rem;
+            color: #1a110b;
+            font-family: 'Times New Roman', serif;
+            font-weight: bold;
+        }
+
+        .clock-face::after {
+            content: 'VI';
+            position: absolute;
+            bottom: 5px;
+            font-size: 0.7rem;
+            color: #1a110b;
+            font-family: 'Times New Roman', serif;
+            font-weight: bold;
+        }
+
+        /* Clock hands */
+        .clock-face-center {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #b8860b;
+            border-radius: 50%;
+            z-index: 5;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .clock-hand-hour,
+        .clock-hand-minute {
+            position: absolute;
+            background: #1a110b;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            border-radius: 2px;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        .clock-hand-hour {
+            width: 4px;
+            height: 20px;
+            transform: translateX(-50%) rotate(95deg);
+            /* Pointing near 3 */
+        }
+
+        .clock-hand-minute {
+            width: 2px;
+            height: 30px;
+            transform: translateX(-50%) rotate(30deg);
+            /* Pointing at 1 */
+        }
+
+        .clock-body {
+            width: 90px;
+            height: 340px;
+            background: linear-gradient(135deg, #463224 0%, #2c1e16 50%, #150e09 100%);
+            border: 5px solid #140d08;
+            margin: 0 auto;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.9), inset 5px 0 10px rgba(255, 255, 255, 0.03);
+            /* Rich depth styling */
+        }
+
+        .clock-window {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 220px;
+            background: rgba(10, 5, 0, 0.9);
+            /* Deep shadow inside */
+            border: 3px solid #1f140e;
+            border-radius: 4px;
+            box-shadow: inset 0 20px 30px rgba(0, 0, 0, 1), 0 0 0 2px #3d2b1f;
+            /* Frame around the glass */
+            overflow: hidden;
+        }
+
+        /* Glass reflection */
+        .clock-window::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(110deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.05) 40%, rgba(255, 255, 255, 0.1) 45%, rgba(255, 255, 255, 0) 50%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* Pendulum Animation */
+        .pendulum {
+            position: absolute;
+            top: 0px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 150px;
+            background: linear-gradient(to right, #8b6508 0%, #daa520 50%, #8b6508 100%);
+            /* Metallic cylinder */
+            transform-origin: top center;
+            animation: swing 2s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        .pendulum::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 34px;
+            height: 34px;
+            background: radial-gradient(circle at 30% 30%, #ffd700 0%, #b8860b 60%, #5c4304 100%);
+            /* Polished brass disc */
+            border-radius: 50%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.9);
+        }
+
+        @keyframes swing {
+
+            0%,
+            100% {
+                transform: translateX(-50%) rotate(-8deg);
+            }
+
+            50% {
+                transform: translateX(-50%) rotate(8deg);
+            }
+        }
+
+        /* Coat Rack (Right Side) */
+        .coat-rack {
+            position: absolute;
+            right: 8%;
+            top: 15%;
+            /* Higher on the wall */
+            width: 120px;
+            height: 400px;
+            /* Taller */
+            cursor: pointer;
+            transition: all 0.3s ease;
+            filter: drop-shadow(15px 25px 25px rgba(0, 0, 0, 0.9));
+            /* Deep wall shadow */
+        }
+
+        .coat-rack:hover {
+            transform: scale(1.02);
+            filter: brightness(1.1) drop-shadow(20px 30px 30px rgba(0, 0, 0, 0.95));
+        }
+
+        .rack-pole {
+            width: 14px;
+            height: 380px;
+            /* Dark forged iron/metal */
+            background: linear-gradient(to right, #111 0%, #333 30%, #0a0a0a 70%, #000 100%);
+            margin: 0 auto;
+            border-radius: 7px;
+            position: relative;
+            box-shadow: inset 2px 0 5px rgba(255, 255, 255, 0.1);
+        }
+
+        .rack-top {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 35px;
+            height: 35px;
+            /* Brass finial */
+            background: radial-gradient(circle at 30% 30%, #dfb55d 0%, #8b6508 50%, #2e2101 100%);
+            border-radius: 50%;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.8);
+        }
+
+        .coat-hook {
+            position: absolute;
+            width: 70px;
+            height: 10px;
+            background: linear-gradient(to bottom, #dfb55d 0%, #8b6508 50%, #2e2101 100%);
+            border-radius: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.7);
+        }
+
+        .coat-hook:nth-of-type(1) {
+            top: 40px;
+        }
+
+        .coat-hook:nth-of-type(2) {
+            top: 70px;
+            width: 50px;
+        }
+
+        .coat-hook:nth-of-type(3) {
+            top: 100px;
+            width: 60px;
+        }
+
+        /* Hanging Coat */
+        .trench-coat {
+            position: absolute;
+            top: 45px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 110px;
+            height: 220px;
+            background: linear-gradient(135deg, #1f2326 0%, #111518 40%, #050708 100%);
+            /* Heavy dark wool */
+            background-image:
+                linear-gradient(135deg, #1f2326 0%, #111518 40%, #050708 100%),
+                repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0, 0, 0, 0.05) 2px, rgba(0, 0, 0, 0.05) 4px);
+            /* Wool texture */
+            /* Advanced border radius to mimic hanging shoulders/fabric */
+            border-radius: 40% 40% 15% 15% / 20% 20% 80% 80%;
+            box-shadow:
+                inset -10px -20px 30px rgba(0, 0, 0, 0.9),
+                inset 5px 0 10px rgba(255, 255, 255, 0.05),
+                5px 10px 15px rgba(0, 0, 0, 0.8);
+            z-index: 5;
+            clip-path: none;
+            /* Removed the harsh polygon cut */
+        }
+
+        /* Fold/Lapel of the coat */
+        .trench-coat::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 20%;
+            width: 40%;
+            height: 180px;
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0) 80%);
+            border-radius: 50% 0 0 50%;
+            pointer-events: none;
+        }
+
+        /* Hidden Paper Clue */
+        #coat-check {
+            display: none;
+        }
+
+        .paper-clue {
+            position: absolute;
+            top: 120px;
+            right: -40px;
+            width: 80px;
+            height: 100px;
+            background: linear-gradient(135deg, #f5f5dc 0%, #e8e8d0 100%);
+            border: 2px solid #d4a520;
+            border-radius: 4px;
+            transform: rotate(15deg) scale(0);
+            opacity: 0;
+            transition: all 0.5s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            padding: 8px;
+            font-size: 0.65rem;
+            color: #2a1f0b;
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        .paper-clue::before {
+            content: '"Time stands still when the truth is hidden."';
+        }
+
+        #coat-check:checked~.foyer-interactive-layer .paper-clue {
+            transform: rotate(15deg) scale(1);
+            opacity: 1;
+        }
+
+        /* Central Door Keypad Hotspot (Overlapping image door) */
+        .inner-door-hotspot {
+            position: absolute;
+            left: 50%;
+            bottom: 12%;
+            transform: translateX(-50%);
+            width: 180px;
+            height: 360px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .inner-door-hotspot:hover .keypad-display {
+            border-color: rgba(232, 186, 48, 0.8);
+            box-shadow: 0 0 30px rgba(232, 186, 48, 0.6);
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+
+        .keypad-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 80px;
+            background: rgba(10, 10, 10, 0.9);
+            border: 3px solid var(--primary);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(232, 186, 48, 0.4);
+        }
+
+        .keypad-label {
+            font-size: 0.6rem;
+            color: var(--primary);
+            font-weight: bold;
+            letter-spacing: 0.1em;
+            margin-bottom: 8px;
+        }
+
+        .code-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .code-dot {
+            width: 12px;
+            height: 12px;
+            background: rgba(232, 186, 48, 0.2);
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+        }
+
+        /* Remove Blocked Staircase CSS as it's now visually in the background image */
+
+        /* Ambient Light */
+        .ambient-light {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(232, 186, 48, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: ambientPulse 6s infinite;
+        }
+
+        @keyframes ambientPulse {
+
+            0%,
+            100% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        /* Dust Particles */
+        .dust {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(232, 186, 48, 0.3);
+            border-radius: 50%;
+            animation: dustDrift 20s infinite;
+        }
+
+        .dust:nth-child(1) {
+            left: 10%;
+            top: 15%;
+            animation-delay: 0s;
+        }
+
+        .dust:nth-child(2) {
+            left: 30%;
+            top: 25%;
+            animation-delay: 4s;
+        }
+
+        .dust:nth-child(3) {
+            left: 50%;
+            top: 35%;
+            animation-delay: 8s;
+        }
+
+        .dust:nth-child(4) {
+            left: 70%;
+            top: 45%;
+            animation-delay: 12s;
+        }
+
+        .dust:nth-child(5) {
+            left: 90%;
+            top: 20%;
+            animation-delay: 16s;
+        }
+
+        @keyframes dustDrift {
+
+            0%,
+            100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.7;
+            }
+
+            50% {
+                transform: translateY(-200px) translateX(50px);
+                opacity: 0.5;
+            }
+
+            90% {
+                opacity: 0.7;
+            }
+        }
+
+        /* Hotspot Indicators */
+        .hotspot-indicator {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: hotspotPulse 2s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes hotspotPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+
+            50% {
+                transform: scale(1.3);
+                opacity: 0.3;
+            }
+        }
+
+        .clock-hotspot {
+            top: 20%;
+            left: 17.5%;
+        }
+
+        .coat-hotspot {
+            top: 30%;
+            right: 15%;
+        }
+
+        .door-hotspot {
+            bottom: 45%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+    </style>
+</head>
+
+<body>
+    <input type="checkbox" id="coat-check" />
+
+    <div class="lit-scene-bg">
+        <!-- Ambient Light (Global) -->
+        <div class="ambient-light"></div>
+
+        <!-- Dust Particles (Global floaters outside the image bounds) -->
+        <div class="dust"></div>
+        <div class="dust"></div>
+        <div class="dust"></div>
+        <div class="dust"></div>
+        <div class="dust"></div>
+
+        <!-- Scene Title -->
+        <div class="scene-title">
+            <div class="chapter-tag">Chapter One: The Foyer</div>
+            <h1 class="scene-name">Solve the Foyer's Secrets</h1>
+        </div>
+
+        <!-- Main Image Room Container -->
+        <div class="lit-image-layer">
+
+            <!-- Interactive Layer Overlaying the Image -->
+            <div class="foyer-interactive-layer">
+
+                <!-- Grandfather Clock (Interactive) -->
+                <a href="foyer-clock.html" class="grandfather-clock" title="Inspect the clock">
+                    <div class="clock-top">
+                        <div class="clock-face">
+                            <div class="clock-face-center"></div>
+                            <div class="clock-hand-hour"></div>
+                            <div class="clock-hand-minute"></div>
+                        </div>
+                    </div>
+                    <div class="clock-body">
+                        <div class="clock-window">
+                            <div class="pendulum"></div>
+                        </div>
+                    </div>
+                </a>
+                <div class="hotspot-indicator clock-hotspot"></div>
+
+                <!-- Coat Rack (Interactive) -->
+                <label for="coat-check" class="coat-rack" title="Search the coat">
+                    <div class="rack-pole">
+                        <div class="rack-top"></div>
+                        <div class="coat-hook"></div>
+                        <div class="coat-hook"></div>
+                        <div class="coat-hook"></div>
+                    </div>
+                    <div class="trench-coat"></div>
+                    <div class="paper-clue"></div>
+                </label>
+                <div class="hotspot-indicator coat-hotspot"></div>
+
+                <!-- Central Keypad on the existing drawn door in the background image -->
+                <a href="foyer-code.html" class="inner-door-hotspot" title="Enter code">
+                    <div class="keypad-display">
+                        <div class="keypad-label">CODE REQUIRED</div>
+                        <div class="code-dots">
+                            <div class="code-dot"></div>
+                            <div class="code-dot"></div>
+                            <div class="code-dot"></div>
+                        </div>
+                    </div>
+                </a>
+                <div class="hotspot-indicator door-hotspot"></div>
+
+            </div>
+        </div>
+
+        <!-- Scene Instructions -->
+        <div class="scene-instruction">
+            Unravel the past to move forward. Investigate the room for clues.
+        </div>
+    </div>
+</body>
+
+</html>
