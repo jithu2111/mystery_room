@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Porch | Mystery Chamber</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="index.css" />
+    <style>
+        /* Porch Scene Styles */
+        .porch-scene {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(to bottom, #0a0a0a 0%, #1a1a1a 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .scene-title {
+            position: absolute;
+            top: 2rem;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .chapter-tag {
+            color: var(--primary);
+            font-size: 0.875rem;
+            font-weight: bold;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        .scene-name {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+            color: var(--text-white);
+        }
+
+        .scene-instruction {
+            position: absolute;
+            bottom: 3rem;
+            text-align: center;
+            color: var(--text-gray);
+            font-size: 1rem;
+            max-width: 600px;
+            padding: 0 2rem;
+            z-index: 10;
+        }
+
+        /* Porch Elements Container */
+        .porch-container {
+            position: relative;
+            width: 90%;
+            max-width: 800px;
+            height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* The Door */
+        .door-frame {
+            position: relative;
+            width: 400px;
+            height: 600px;
+            background: linear-gradient(135deg, #3a2f1b 0%, #2a1f0b 100%);
+            border: 8px solid #1a1308;
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 8px;
+            padding: 20px;
+        }
+
+        .door-panel {
+            background: linear-gradient(135deg, #4a3f2b 0%, #3a2f1b 100%);
+            border: 3px solid #2a1f0b;
+            border-radius: 4px;
+        }
+
+        .door-keyhole {
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 35px;
+            background: #0a0a0a;
+            border-radius: 50% 50% 0 0;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.8);
+        }
+
+        .door-keyhole::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 15px;
+            background: #0a0a0a;
+            border-radius: 0 0 2px 2px;
+        }
+
+        /* Environmental Elements */
+        .welcome-mat {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 60px;
+            background: linear-gradient(to bottom, #4a4a3a 0%, #3a3a2a 100%);
+            border: 2px solid #2a2a1a;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #5a5a4a;
+            font-weight: bold;
+            letter-spacing: 0.1em;
+        }
+
+        .welcome-mat::before {
+            content: 'WELCOME';
+        }
+
+        /* Potted Plant - Interactive */
+        #plant-check {
+            display: none;
+        }
+
+        .potted-plant {
+            position: absolute;
+            bottom: -40px;
+            right: -100px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .potted-plant:hover {
+            transform: scale(1.05);
+        }
+
+        .pot {
+            width: 80px;
+            height: 100px;
+            background: linear-gradient(to bottom, #8b4513 0%, #654321 100%);
+            border-radius: 0 0 40px 40px;
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .pot::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90px;
+            height: 20px;
+            background: linear-gradient(to bottom, #a0522d 0%, #8b4513 100%);
+            border-radius: 50%;
+        }
+
+        .dead-plant {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 40px;
+            opacity: 0.6;
+        }
+
+        .dead-plant::before,
+        .dead-plant::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 30px;
+            background: #3a2f1b;
+            transform-origin: bottom;
+        }
+
+        .dead-plant::before {
+            left: 20px;
+            transform: rotate(-20deg);
+        }
+
+        .dead-plant::after {
+            right: 20px;
+            transform: rotate(20deg);
+        }
+
+        /* Hidden Key */
+        .brass-key {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            width: 50px;
+            height: 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, #d4a520 100%);
+            border-radius: 2px;
+            opacity: 0;
+            transition: all 0.5s ease;
+            pointer-events: none;
+        }
+
+        .brass-key::before {
+            content: '';
+            position: absolute;
+            left: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 15px;
+            height: 15px;
+            background: linear-gradient(135deg, var(--primary) 0%, #d4a520 100%);
+            border-radius: 50%;
+            border: 3px solid #0a0a0a;
+        }
+
+        .brass-key::after {
+            content: '';
+            position: absolute;
+            right: -8px;
+            top: 0;
+            width: 8px;
+            height: 8px;
+            background: linear-gradient(135deg, var(--primary) 0%, #d4a520 100%);
+            border-radius: 1px;
+        }
+
+        /* When plant is clicked, shift it and reveal key */
+        #plant-check:checked ~ .porch-container .potted-plant {
+            transform: translateX(-30px);
+        }
+
+        #plant-check:checked ~ .porch-container .brass-key {
+            transform: translateX(-50%) scale(1);
+            opacity: 1;
+            pointer-events: all;
+            animation: keyGlint 2s infinite;
+        }
+
+        @keyframes keyGlint {
+            0%, 100% {
+                filter: brightness(1);
+            }
+            50% {
+                filter: brightness(1.5);
+            }
+        }
+
+        /* Key Interaction */
+        #key-check {
+            display: none;
+        }
+
+        .key-label {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 20px;
+            cursor: pointer;
+            z-index: 5;
+        }
+
+        /* Door Opening Effect */
+        #key-check:checked ~ .porch-container .door-frame {
+            animation: doorOpen 1.5s ease forwards;
+        }
+
+        @keyframes doorOpen {
+            0% {
+                transform: perspective(1000px) rotateY(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: perspective(1000px) rotateY(-80deg);
+                opacity: 0.3;
+            }
+        }
+
+        /* Reveal dark interior */
+        .dark-interior {
+            position: absolute;
+            width: 380px;
+            height: 580px;
+            background: #000000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.5s ease;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #key-check:checked ~ .porch-container .dark-interior {
+            opacity: 1;
+            pointer-events: all;
+            animation: revealDarkness 2s ease forwards;
+        }
+
+        @keyframes revealDarkness {
+            0% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .enter-link {
+            padding: 1rem 2rem;
+            background: var(--primary);
+            color: var(--background-dark);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 10px 30px rgba(232, 186, 48, 0.4);
+            transition: transform 0.3s ease;
+            opacity: 0;
+            animation: fadeInEnter 1s ease 2.5s forwards;
+        }
+
+        .enter-link:hover {
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeInEnter {
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Porch Light */
+        .porch-light {
+            position: absolute;
+            top: -120px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 80px;
+        }
+
+        .light-fixture {
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, rgba(232, 186, 48, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: flicker 3s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        .light-bulb {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 40px;
+            background: linear-gradient(to bottom, rgba(255, 220, 150, 0.8) 0%, rgba(255, 200, 100, 0.6) 100%);
+            border-radius: 50% 50% 40% 40%;
+            box-shadow: 0 0 20px rgba(232, 186, 48, 0.5);
+        }
+
+        /* Floating Dust Particles */
+        .dust {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: float 10s infinite;
+        }
+
+        .dust:nth-child(1) {
+            left: 20%;
+            top: 20%;
+            animation-delay: 0s;
+        }
+
+        .dust:nth-child(2) {
+            left: 40%;
+            top: 60%;
+            animation-delay: 2s;
+        }
+
+        .dust:nth-child(3) {
+            left: 60%;
+            top: 30%;
+            animation-delay: 4s;
+        }
+
+        .dust:nth-child(4) {
+            left: 80%;
+            top: 50%;
+            animation-delay: 6s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.5;
+            }
+            50% {
+                transform: translateY(-100px) translateX(20px);
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.5;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="porch-scene">
+        <!-- Floating Dust -->
+        <div class="dust"></div>
+        <div class="dust"></div>
+        <div class="dust"></div>
+        <div class="dust"></div>
+
+        <!-- Scene Title -->
+        <div class="scene-title">
+            <div class="chapter-tag">Chapter One: The Foyer</div>
+            <h1 class="scene-name">The Porch</h1>
+        </div>
+
+        <!-- Hidden Checkboxes for Interaction -->
+        <input type="checkbox" id="plant-check" />
+        <input type="checkbox" id="key-check" />
+
+        <!-- Main Porch Container -->
+        <div class="porch-container">
+            <!-- Porch Light -->
+            <div class="porch-light">
+                <div class="light-fixture">
+                    <div class="light-bulb"></div>
+                </div>
+            </div>
+
+            <!-- The Door -->
+            <div class="door-frame">
+                <div class="door-panel"></div>
+                <div class="door-panel"></div>
+                <div class="door-panel"></div>
+                <div class="door-panel"></div>
+                <div class="door-keyhole"></div>
+            </div>
+
+            <!-- Dark Interior (revealed after key is used) -->
+            <div class="dark-interior">
+                <a href="foyer-dark.html" class="enter-link">Step Inside &rarr;</a>
+            </div>
+
+            <!-- Welcome Mat -->
+            <div class="welcome-mat"></div>
+
+            <!-- Potted Plant (Clickable) -->
+            <label for="plant-check" class="potted-plant">
+                <div class="pot">
+                    <div class="dead-plant"></div>
+                </div>
+            </label>
+
+            <!-- Hidden Key (revealed when plant is clicked) -->
+            <label for="key-check" class="key-label">
+                <div class="brass-key"></div>
+            </label>
+        </div>
+
+        <!-- Scene Instructions -->
+        <div class="scene-instruction">
+            Search the entrance for a way inside. The door is locked tight.
+        </div>
+    </div>
+</body>
+</html>
