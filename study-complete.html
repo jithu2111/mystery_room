@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chapter Complete | Mystery Chamber</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="index.css" />
+    <style>
+        /* Completion Scene */
+        .completion-scene {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1610 50%, #2a1f0b 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Animated Background Stars */
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        .star:nth-child(1) {
+            top: 10%;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .star:nth-child(2) {
+            top: 20%;
+            left: 80%;
+            animation-delay: 0.5s;
+        }
+
+        .star:nth-child(3) {
+            top: 30%;
+            left: 30%;
+            animation-delay: 1s;
+        }
+
+        .star:nth-child(4) {
+            top: 40%;
+            left: 70%;
+            animation-delay: 1.5s;
+        }
+
+        .star:nth-child(5) {
+            top: 60%;
+            left: 20%;
+            animation-delay: 2s;
+        }
+
+        .star:nth-child(6) {
+            top: 70%;
+            left: 85%;
+            animation-delay: 2.5s;
+        }
+
+        .star:nth-child(7) {
+            top: 80%;
+            left: 50%;
+            animation-delay: 3s;
+        }
+
+        @keyframes twinkle {
+
+            0%,
+            100% {
+                opacity: 0.3;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.5);
+            }
+        }
+
+        /* Main Content Container */
+        .completion-content {
+            text-align: center;
+            max-width: 800px;
+            padding: 1.5rem;
+            position: relative;
+            z-index: 10;
+            animation: fadeInUp 1.5s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Success Badge */
+        .success-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: linear-gradient(135deg, rgba(232, 186, 48, 0.2) 0%, rgba(232, 186, 48, 0.1) 100%);
+            border: 2px solid var(--primary);
+            border-radius: 50px;
+            color: var(--primary);
+            font-size: 0.75rem;
+            font-weight: bold;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            box-shadow: 0 0 30px rgba(232, 186, 48, 0.3);
+            animation: badgeGlow 2s infinite;
+        }
+
+        @keyframes badgeGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 30px rgba(232, 186, 48, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 50px rgba(232, 186, 48, 0.6);
+            }
+        }
+
+        .success-badge::before {
+            content: '✓ ';
+            font-size: 1.2rem;
+        }
+
+        /* Chapter Title */
+        .chapter-complete {
+            font-size: 2.75rem;
+            font-weight: bold;
+            color: var(--text-white);
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+            text-shadow: 0 4px 20px rgba(232, 186, 48, 0.4);
+        }
+
+        .chapter-name {
+            color: var(--primary);
+            display: block;
+            font-size: 2.25rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Stats Section */
+        .stats-container {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: rgba(232, 186, 48, 0.05);
+            border: 1px solid rgba(232, 186, 48, 0.2);
+            border-radius: 1rem;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            animation: statFloat 3s infinite ease-in-out;
+        }
+
+        @keyframes statFloat {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .stat-item:nth-child(1) .stat-icon {
+            animation-delay: 0s;
+        }
+
+        .stat-item:nth-child(2) .stat-icon {
+            animation-delay: 0.5s;
+        }
+
+        .stat-item:nth-child(3) .stat-icon {
+            animation-delay: 1s;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-gray);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        /* Story Text */
+        .story-text {
+            color: var(--text-gray);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            font-weight: bold;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .primary-action {
+            background: var(--primary);
+            color: var(--background-dark);
+            box-shadow: 0 15px 40px rgba(232, 186, 48, 0.4);
+        }
+
+        .primary-action:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 50px rgba(232, 186, 48, 0.6);
+        }
+
+        .secondary-action {
+            background: rgba(232, 186, 48, 0.1);
+            border: 2px solid rgba(232, 186, 48, 0.3);
+            color: var(--primary);
+        }
+
+        .secondary-action:hover {
+            background: rgba(232, 186, 48, 0.2);
+            border-color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        /* Decorative Elements */
+        .decorative-line {
+            width: 150px;
+            height: 2px;
+            background: linear-gradient(to right, transparent 0%, var(--primary) 50%, transparent 100%);
+            margin: 1rem auto;
+            opacity: 0.5;
+        }
+
+        /* Glowing Orbs */
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.3;
+            animation: orbFloat 8s infinite ease-in-out;
+        }
+
+        .orb-1 {
+            top: 10%;
+            left: 10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(232, 186, 48, 0.4) 0%, transparent 70%);
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            bottom: 10%;
+            right: 10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(232, 186, 48, 0.3) 0%, transparent 70%);
+            animation-delay: 2s;
+        }
+
+        @keyframes orbFloat {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            33% {
+                transform: translate(30px, -30px) scale(1.1);
+            }
+
+            66% {
+                transform: translate(-30px, 30px) scale(0.9);
+            }
+        }
+
+        /* Achievement Unlocked */
+        .achievement {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(15, 15, 15, 0.8);
+            border: 2px solid var(--primary);
+            border-radius: 1rem;
+            margin-top: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .achievement-icon {
+            font-size: 2rem;
+            animation: achievementBounce 1s infinite;
+        }
+
+        @keyframes achievementBounce {
+
+            0%,
+            100% {
+                transform: rotate(0deg);
+            }
+
+            25% {
+                transform: rotate(-10deg);
+            }
+
+            75% {
+                transform: rotate(10deg);
+            }
+        }
+
+        .achievement-text {
+            text-align: left;
+        }
+
+        .achievement-title {
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .achievement-desc {
+            color: var(--text-gray);
+            font-size: 0.875rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .chapter-complete {
+                font-size: 2.5rem;
+            }
+
+            .chapter-name {
+                font-size: 2rem;
+            }
+
+            .stats-container {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="completion-scene">
+        <!-- Background Stars -->
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+
+        <!-- Glowing Orbs -->
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+
+        <!-- Main Content -->
+        <div class="completion-content">
+            <div class="success-badge">Chapter Complete</div>
+
+            <h1 class="chapter-complete">
+                You Escaped
+                <span class="chapter-name">The Victorian Study</span>
+            </h1>
+
+            <div class="decorative-line"></div>
+
+            <!-- Stats -->
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div class="stat-icon">📚</div>
+                    <div class="stat-value">6</div>
+                    <div class="stat-label">Books Aligned</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">⚙️</div>
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">Mechanism Activated</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">🏆</div>
+                    <div class="stat-value">100%</div>
+                    <div class="stat-label">Completion</div>
+                </div>
+            </div>
+
+            <!-- Story Text -->
+            <p class="story-text">
+                With a resounding clank, the bookshelf slides aside to reveal a dark, winding passage. The mechanism of
+                truth has been aligned. You've uncovered the secret, but the investigation is far from over...
+            </p>
+
+            <!-- Achievement -->
+            <div class="achievement">
+                <div class="achievement-icon">🔍</div>
+                <div class="achievement-text">
+                    <div class="achievement-title">ACHIEVEMENT UNLOCKED</div>
+                    <div class="achievement-desc">The Mechanism of Truth - Complete Chapter Two</div>
+                </div>
+            </div>
+
+            <div class="decorative-line"></div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a href="index.html#cases" class="action-btn primary-action">
+                    <span>Choose Next Mystery</span>
+                    <span>→</span>
+                </a>
+                <a href="study-intro.html" class="action-btn secondary-action">
+                    <span>↺</span>
+                    <span>Replay Chapter</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
