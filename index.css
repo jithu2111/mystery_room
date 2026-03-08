@@ -125,7 +125,7 @@ body {
   padding: 2rem;
   border: 1px solid rgba(232, 186, 48, 0.1);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBe7eWIIFkcDbOJIXOfeMHZ1F3jNFwQNMFu52UBRMgNVNjbAfRnKZeS1IJ9zeHc3ht4Su09de-40RnoqQMZtHQva_mNKTBhEXhhLEmwCErKKycuDVtKK3bvnpZXTilHTedQFJvN_jlLV7FGPon6Qv96xLcRKL-UrTOns8YQpE1Aror01JrQZ8qQuf-euHC25k7QmbmAb1vpZU830haWQTZHgwxltaME8NbcwJGjIWrY2Z9GroyjgiW-Qn6jCgy8aVkIW4yZGC6inoii");
+  background-image: url('assets/images/hero_image.png');
   background-size: cover;
   background-position: center;
 }
