@@ -4,10 +4,15 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The Foyer | Mystery Chamber</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet" />
-    <link rel="stylesheet" href="index.css" />
+    <title>The Victorian Study | Mystery Chamber</title>
+    <meta name="description"
+        content="An immersive web-based escape room experience. Solve puzzles, find clues, and escape the Mystery Chamber." />
+    <!-- Preconnect to Google Fonts to speed up FCP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Preload Critical Hero Image -->
+    <link rel="preload" href="../../assets/images/study/Victorian_Study.png" as="image" />
+    <link rel="stylesheet" href="../../index.css" />
 </head>
 
 <body class="foyer-page">
@@ -15,7 +20,7 @@
         <!-- Top Navigation Bar -->
         <header class="navbar">
             <div class="navbar-content">
-                <a href="index.html" class="logo" style="text-decoration: none;">
+                <a href="../../index.html" class="logo" style="text-decoration: none;">
                     <div class="logo-icon">M</div>
                     <h1 class="logo-text">Mystery Chamber</h1>
                 </a>
@@ -26,20 +31,21 @@
             <div class="foyer-layout">
                 <!-- Room Preview - Left Side -->
                 <div class="room-preview-container">
-                    <img src="assets/images/Foyer.png" alt="The Foyer Door" class="foyer-hero-img" />
+                    <img src="../../assets/images/study/Victorian_Study.png" alt="The Victorian Study"
+                        class="foyer-hero-img" />
                 </div>
 
                 <!-- Room Info - Right Side -->
                 <div class="room-content">
                     <div class="room-details">
-                        <span class="chapter-label">CHAPTER ONE</span>
-                        <h2 class="room-title">Escape Room: <span class="highlight">The Foyer</span></h2>
+                        <span class="chapter-label">CHAPTER TWO</span>
+                        <h2 class="room-title">Escape Room: <span class="highlight">The Victorian Study</span></h2>
                         <p class="room-description">
-                            The air is thin and cold. Dust dances in a single sliver of moonlight. The heavy oak door
-                            behind you has no handle, and the path forward is shrouded in mystery.
+                            Uncover secrets hidden within a panoramic 19th-century study filled with mechanical wonders
+                            and dusty journals. The mechanism of truth awaits.
                         </p>
 
-                        <a href="foyer-porch.html" class="primary-btn adventure-btn"
+                        <a href="study.html" class="primary-btn adventure-btn"
                             style="text-decoration: none; display: inline-block;">Begin Adventure &rarr;</a>
                     </div>
 
@@ -48,7 +54,7 @@
                     <div class="room-stats-grid">
                         <div class="stat-item">
                             <span class="stat-label">EST. TIME</span>
-                            <span class="stat-value">45 Min</span>
+                            <span class="stat-value">75 Min</span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">DIFFICULTY</span>
