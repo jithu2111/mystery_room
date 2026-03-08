@@ -1,364 +1,389 @@
 <!doctype html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The Porch | Mystery Chamber</title>
-    <meta name="description" content="An immersive web-based escape room experience. Solve puzzles, find clues, and escape the Mystery Chamber." />
+    <meta
+      name="description"
+      content="An immersive web-based escape room experience. Solve puzzles, find clues, and escape the Mystery Chamber."
+    />
     <!-- Preconnect to Google Fonts to speed up FCP -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="../../index.css" />
     <style>
-        /* Container for the whole scene with a cinematic black background */
-        .porch-scene-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: #030303;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
+      /* Container for the whole scene with a cinematic black background */
+      .porch-scene-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: #030303;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      /* The actual image container that scales but maintains aspect ratio */
+      .porch-image-layer {
+        position: relative;
+        /* Aspect ratio 1/1 because Porch.png is square */
+        aspect-ratio: 1 / 1;
+        width: 100%;
+        /* Constrain to screen size and cap at 800px to preserve clarity */
+        max-width: min(90vh, 100vw, 800px);
+        background-image: url("../../assets/images/foyer/Porch.png");
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+        box-shadow:
+          0 0 100px rgba(0, 0, 0, 0.95),
+          inset 0 0 60px rgba(0, 0, 0, 0.8);
+        border-radius: 8px;
+      }
+
+      .scene-title {
+        position: absolute;
+        top: 2rem;
+        text-align: center;
+        z-index: 20;
+        text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+      }
+
+      .chapter-tag {
+        color: var(--primary);
+        font-size: 0.875rem;
+        font-weight: bold;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+      }
+
+      .scene-name {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-top: 0.5rem;
+        color: var(--text-white);
+      }
+
+      .scene-instruction {
+        position: absolute;
+        bottom: 3rem;
+        text-align: center;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1.1rem;
+        max-width: 600px;
+        padding: 0 2rem;
+        z-index: 20;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 1);
+        background: rgba(10, 10, 10, 0.4);
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        border: 1px solid rgba(232, 186, 48, 0.2);
+      }
+
+      /* Interactive Container Overlaying Image */
+      .porch-interactive-layer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      /* Hidden Checkboxes */
+      #box-check,
+      #key-check {
+        display: none;
+      }
+
+      /* The Chest Hotspot (Mapped to image chest on right rail) */
+      .chest-hotspot {
+        position: absolute;
+        bottom: 38%;
+        right: 8%;
+        width: 15vw;
+        height: 12vw;
+        max-width: 200px;
+        max-height: 160px;
+        cursor: pointer;
+        z-index: 10;
+      }
+
+      /* Pulsing Glow to guide player */
+      .chest-hotspot::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+        border-radius: 8px;
+        background: radial-gradient(
+          circle,
+          rgba(232, 186, 48, 0.3) 0%,
+          transparent 70%
+        );
+        animation: hintPulseBox 3s infinite;
+        pointer-events: none;
+        box-shadow: 0 0 30px rgba(232, 186, 48, 0.1);
+      }
+
+      @keyframes hintPulseBox {
+        0%,
+        100% {
+          opacity: 0.2;
+          transform: translate(-50%, -50%) scale(0.9);
         }
 
-        /* The actual image container that scales but maintains aspect ratio */
-        .porch-image-layer {
-            position: relative;
-            /* Aspect ratio 1/1 because Porch.png is square */
-            aspect-ratio: 1 / 1;
-            width: 100%;
-            /* Constrain to screen size and cap at 800px to preserve clarity */
-            max-width: min(90vh, 100vw, 800px);
-            background-image: url('../../assets/images/foyer/Porch.png');
-            background-size: contain;
-            background-position: center;
-            background-repeat: no-repeat;
-            box-shadow: 0 0 100px rgba(0, 0, 0, 0.95), inset 0 0 60px rgba(0, 0, 0, 0.8);
-            border-radius: 8px;
+        50% {
+          opacity: 0.6;
+          transform: translate(-50%, -50%) scale(1.1);
+        }
+      }
+
+      /* Hover Feedback */
+      .chest-hotspot:hover::before {
+        background: radial-gradient(
+          circle,
+          rgba(232, 186, 48, 0.5) 0%,
+          transparent 70%
+        );
+      }
+
+      /* The Key Revealed! */
+      .brass-key-item {
+        position: absolute;
+        bottom: 45%;
+        right: 12%;
+        width: 80px;
+        height: 80px;
+        background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" fill="%23e8ba30" xmlns="http://www.w3.org/2000/svg"><path d="M7 14c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3c0 .26-.04.51-.1.75L12 14h2v2h2v2h2v2h-4v-2h-2v-2h-3.11c-.57.6-1.38 1-2.29 1zm0-4.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5S7.83 9.5 7 9.5z"/></svg>');
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        filter: drop-shadow(0 0 20px rgba(232, 186, 48, 0.8));
+        opacity: 0;
+        transform: translateY(20px) scale(0);
+        pointer-events: none;
+        transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        z-index: 15;
+        cursor: pointer;
+      }
+
+      /* Key Reveal Animation (When Box is clicked) */
+      #box-check:checked ~ .porch-image-layer .brass-key-item {
+        opacity: 1;
+        transform: translateY(0) scale(1.5);
+        pointer-events: auto;
+        animation: floatKey 3s infinite ease-in-out;
+      }
+
+      /* Hide Box Hint after clicking */
+      #box-check:checked ~ .porch-image-layer .chest-hotspot {
+        pointer-events: none;
+      }
+
+      #box-check:checked ~ .porch-image-layer .chest-hotspot::before {
+        display: none;
+      }
+
+      @keyframes floatKey {
+        0%,
+        100% {
+          transform: translateY(0) scale(1.5);
+          filter: drop-shadow(0 0 20px rgba(232, 186, 48, 0.8));
         }
 
-        .scene-title {
-            position: absolute;
-            top: 2rem;
-            text-align: center;
-            z-index: 20;
-            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+        50% {
+          transform: translateY(-10px) scale(1.6);
+          filter: drop-shadow(0 0 40px rgba(255, 220, 100, 1));
+        }
+      }
+
+      /* Dark Fade Transition (Entry into house) */
+      .enter-transition-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #000;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 1.5s ease-in-out;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #key-check:checked ~ .enter-transition-overlay {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .enter-link {
+        padding: 1.25rem 3rem;
+        background: transparent;
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        text-decoration: none;
+        border-radius: 0.5rem;
+        font-weight: bold;
+        font-size: 1.25rem;
+        box-shadow:
+          0 0 40px rgba(232, 186, 48, 0.2),
+          inset 0 0 20px rgba(232, 186, 48, 0.1);
+        transition: all 0.3s ease;
+        opacity: 0;
+        transform: scale(0.9);
+      }
+
+      #key-check:checked ~ .enter-transition-overlay .enter-link {
+        animation: popInLink 1s ease 1.5s forwards;
+        pointer-events: auto;
+      }
+
+      .enter-link:hover {
+        background: rgba(232, 186, 48, 0.1);
+        box-shadow:
+          0 0 60px rgba(232, 186, 48, 0.4),
+          inset 0 0 30px rgba(232, 186, 48, 0.2);
+        text-shadow: 0 0 10px rgba(232, 186, 48, 1);
+        transform: scale(1.05);
+      }
+
+      @keyframes popInLink {
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      /* Floating Dust Particles */
+      .dust {
+        position: absolute;
+        width: 3px;
+        height: 3px;
+        background: rgba(255, 230, 150, 0.4);
+        border-radius: 50%;
+        animation: float 15s infinite;
+        filter: blur(1px);
+        box-shadow: 0 0 10px rgba(255, 230, 150, 0.8);
+      }
+
+      .dust:nth-child(1) {
+        left: 20%;
+        top: 20%;
+        animation-delay: 0s;
+      }
+
+      .dust:nth-child(2) {
+        left: 40%;
+        top: 60%;
+        animation-delay: 3s;
+      }
+
+      .dust:nth-child(3) {
+        left: 60%;
+        top: 30%;
+        animation-delay: 7s;
+      }
+
+      .dust:nth-child(4) {
+        left: 80%;
+        top: 50%;
+        animation-delay: 11s;
+      }
+
+      .dust:nth-child(5) {
+        left: 30%;
+        top: 80%;
+        animation-delay: 5s;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0) translateX(0);
+          opacity: 0;
         }
 
-        .chapter-tag {
-            color: var(--primary);
-            font-size: 0.875rem;
-            font-weight: bold;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
+        10% {
+          opacity: 0.6;
         }
 
-        .scene-name {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-top: 0.5rem;
-            color: var(--text-white);
+        50% {
+          transform: translateY(-150px) translateX(40px);
+          opacity: 0.8;
         }
 
-        .scene-instruction {
-            position: absolute;
-            bottom: 3rem;
-            text-align: center;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 1.1rem;
-            max-width: 600px;
-            padding: 0 2rem;
-            z-index: 20;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 1);
-            background: rgba(10, 10, 10, 0.4);
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            border: 1px solid rgba(232, 186, 48, 0.2);
+        90% {
+          opacity: 0.4;
         }
-
-        /* Interactive Container Overlaying Image */
-        .porch-interactive-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        /* Hidden Checkboxes */
-        #box-check,
-        #key-check {
-            display: none;
-        }
-
-        /* The Chest Hotspot (Mapped to image chest on right rail) */
-        .chest-hotspot {
-            position: absolute;
-            bottom: 38%;
-            right: 8%;
-            width: 15vw;
-            height: 12vw;
-            max-width: 200px;
-            max-height: 160px;
-            cursor: pointer;
-            z-index: 10;
-        }
-
-        /* Pulsing Glow to guide player */
-        .chest-hotspot::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%;
-            height: 100%;
-            border-radius: 8px;
-            background: radial-gradient(circle, rgba(232, 186, 48, 0.3) 0%, transparent 70%);
-            animation: hintPulseBox 3s infinite;
-            pointer-events: none;
-            box-shadow: 0 0 30px rgba(232, 186, 48, 0.1);
-        }
-
-        @keyframes hintPulseBox {
-
-            0%,
-            100% {
-                opacity: 0.2;
-                transform: translate(-50%, -50%) scale(0.9);
-            }
-
-            50% {
-                opacity: 0.6;
-                transform: translate(-50%, -50%) scale(1.1);
-            }
-        }
-
-        /* Hover Feedback */
-        .chest-hotspot:hover::before {
-            background: radial-gradient(circle, rgba(232, 186, 48, 0.5) 0%, transparent 70%);
-        }
-
-        /* The Key Revealed! */
-        .brass-key-item {
-            position: absolute;
-            bottom: 45%;
-            right: 12%;
-            width: 80px;
-            height: 80px;
-            background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" fill="%23e8ba30" xmlns="http://www.w3.org/2000/svg"><path d="M7 14c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3c0 .26-.04.51-.1.75L12 14h2v2h2v2h2v2h-4v-2h-2v-2h-3.11c-.57.6-1.38 1-2.29 1zm0-4.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5S7.83 9.5 7 9.5z"/></svg>');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            filter: drop-shadow(0 0 20px rgba(232, 186, 48, 0.8));
-            opacity: 0;
-            transform: translateY(20px) scale(0);
-            pointer-events: none;
-            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 15;
-            cursor: pointer;
-        }
-
-        /* Key Reveal Animation (When Box is clicked) */
-        #box-check:checked~.porch-image-layer .brass-key-item {
-            opacity: 1;
-            transform: translateY(0) scale(1.5);
-            pointer-events: auto;
-            animation: floatKey 3s infinite ease-in-out;
-        }
-
-        /* Hide Box Hint after clicking */
-        #box-check:checked~.porch-image-layer .chest-hotspot {
-            pointer-events: none;
-        }
-
-        #box-check:checked~.porch-image-layer .chest-hotspot::before {
-            display: none;
-        }
-
-        @keyframes floatKey {
-
-            0%,
-            100% {
-                transform: translateY(0) scale(1.5);
-                filter: drop-shadow(0 0 20px rgba(232, 186, 48, 0.8));
-            }
-
-            50% {
-                transform: translateY(-10px) scale(1.6);
-                filter: drop-shadow(0 0 40px rgba(255, 220, 100, 1));
-            }
-        }
-
-        /* Dark Fade Transition (Entry into house) */
-        .enter-transition-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 1.5s ease-in-out;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #key-check:checked~.enter-transition-overlay {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .enter-link {
-            padding: 1.25rem 3rem;
-            background: transparent;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-            text-decoration: none;
-            border-radius: 0.5rem;
-            font-weight: bold;
-            font-size: 1.25rem;
-            box-shadow: 0 0 40px rgba(232, 186, 48, 0.2), inset 0 0 20px rgba(232, 186, 48, 0.1);
-            transition: all 0.3s ease;
-            opacity: 0;
-            transform: scale(0.9);
-        }
-
-        #key-check:checked~.enter-transition-overlay .enter-link {
-            animation: popInLink 1s ease 1.5s forwards;
-            pointer-events: auto;
-        }
-
-        .enter-link:hover {
-            background: rgba(232, 186, 48, 0.1);
-            box-shadow: 0 0 60px rgba(232, 186, 48, 0.4), inset 0 0 30px rgba(232, 186, 48, 0.2);
-            text-shadow: 0 0 10px rgba(232, 186, 48, 1);
-            transform: scale(1.05);
-        }
-
-        @keyframes popInLink {
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        /* Floating Dust Particles */
-        .dust {
-            position: absolute;
-            width: 3px;
-            height: 3px;
-            background: rgba(255, 230, 150, 0.4);
-            border-radius: 50%;
-            animation: float 15s infinite;
-            filter: blur(1px);
-            box-shadow: 0 0 10px rgba(255, 230, 150, 0.8);
-        }
-
-        .dust:nth-child(1) {
-            left: 20%;
-            top: 20%;
-            animation-delay: 0s;
-        }
-
-        .dust:nth-child(2) {
-            left: 40%;
-            top: 60%;
-            animation-delay: 3s;
-        }
-
-        .dust:nth-child(3) {
-            left: 60%;
-            top: 30%;
-            animation-delay: 7s;
-        }
-
-        .dust:nth-child(4) {
-            left: 80%;
-            top: 50%;
-            animation-delay: 11s;
-        }
-
-        .dust:nth-child(5) {
-            left: 30%;
-            top: 80%;
-            animation-delay: 5s;
-        }
-
-        @keyframes float {
-
-            0%,
-            100% {
-                transform: translateY(0) translateX(0);
-                opacity: 0;
-            }
-
-            10% {
-                opacity: 0.6;
-            }
-
-            50% {
-                transform: translateY(-150px) translateX(40px);
-                opacity: 0.8;
-            }
-
-            90% {
-                opacity: 0.4;
-            }
-        }
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <div class="porch-scene-bg">
-        <!-- Ambient Dust -->
-        <div class="dust"></div>
-        <div class="dust"></div>
-        <div class="dust"></div>
-        <div class="dust"></div>
-        <div class="dust"></div>
+      <!-- Ambient Dust -->
+      <div class="dust"></div>
+      <div class="dust"></div>
+      <div class="dust"></div>
+      <div class="dust"></div>
+      <div class="dust"></div>
 
-        <!-- Scene Title -->
-        <div class="scene-title">
-            <div class="chapter-tag">Chapter One: The Foyer</div>
-            <h1 class="scene-name">The Porch</h1>
+      <!-- Scene Title -->
+      <div class="scene-title">
+        <div class="chapter-tag">Chapter One: The Foyer</div>
+        <h1 class="scene-name">The Porch</h1>
+      </div>
+
+      <!-- Hidden Checkboxes for Game Logic -->
+      <input type="checkbox" id="box-check" />
+      <input type="checkbox" id="key-check" />
+
+      <!-- Image Layer serving as the play area -->
+      <div class="porch-image-layer">
+        <!-- Interactive Layer perfectly mapped to image -->
+        <div class="porch-interactive-layer">
+          <!-- Chest Hotspot -->
+          <label
+            for="box-check"
+            class="chest-hotspot"
+            title="Inspect chest"
+          ></label>
+
+          <!-- The Key! Links to key-check -->
+          <label
+            for="key-check"
+            class="brass-key-item"
+            title="Unlock the door"
+          ></label>
         </div>
+      </div>
 
-        <!-- Hidden Checkboxes for Game Logic -->
-        <input type="checkbox" id="box-check" />
-        <input type="checkbox" id="key-check" />
+      <!-- Door Transition Overlay -->
+      <div class="enter-transition-overlay">
+        <a href="foyer-dark.html" class="enter-link"
+          >Step Into The Darkness &rarr;</a
+        >
+      </div>
 
-        <!-- Image Layer serving as the play area -->
-        <div class="porch-image-layer">
-            <!-- Interactive Layer perfectly mapped to image -->
-            <div class="porch-interactive-layer">
-                <!-- Chest Hotspot -->
-                <label for="box-check" class="chest-hotspot" title="Inspect chest"></label>
-
-                <!-- The Key! Links to key-check -->
-                <label for="key-check" class="brass-key-item" title="Unlock the door"></label>
-            </div>
-        </div>
-
-        <!-- Door Transition Overlay -->
-        <div class="enter-transition-overlay">
-            <a href="foyer-dark.html" class="enter-link">Step Into The Darkness &rarr;</a>
-        </div>
-
-        <!-- Scene Instructions -->
-        <div class="scene-instruction">
-            The colossal oak door is locked tight. Search the porch for a way inside.
-        </div>
+      <!-- Scene Instructions -->
+      <div class="scene-instruction">
+        The colossal oak door is locked tight. Search the porch for a way
+        inside.
+      </div>
     </div>
-</body>
-
+  </body>
 </html>
