@@ -217,9 +217,9 @@
             align-items: flex-end;
             justify-content: center;
             padding-bottom: 20px;
-            border-bottom: 40px solid #2e1a11;
-            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.9), inset 0 -10px 20px rgba(0, 0, 0, 0.8);
-            background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.6));
+            /* Removed artificial brown shelf */
+            box-shadow: 0 40px 50px rgba(0, 0, 0, 0.7);
+            background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.5));
             border-radius: 5px 5px 0 0;
             perspective: 800px;
         }
@@ -235,57 +235,107 @@
 
         .book {
             margin-top: auto !important;
-            width: 70px;
+            width: 75px;
+            /* Slightly wider */
             height: 240px;
             margin: 0 4px;
-            background: linear-gradient(to right, #2c0b0e 0%, #4a151b 50%, #2c0b0e 100%);
-            border-left: 3px solid rgba(255, 255, 255, 0.1);
-            border-right: 2px solid rgba(0, 0, 0, 0.5);
-            border-radius: 6px 3px 3px 6px;
+            /* Base leather gradient, but more rounded */
+            background: linear-gradient(to right,
+                    /* Shadow edge */
+                    rgba(0, 0, 0, 0.8) 0%,
+                    /* Light hit */
+                    rgba(255, 255, 255, 0.15) 15%,
+                    /* Core color */
+                    transparent 25%,
+                    /* Core color */
+                    transparent 75%,
+                    /* Second light */
+                    rgba(255, 255, 255, 0.05) 85%,
+                    /* Right shadow edge */
+                    rgba(0, 0, 0, 0.9) 100%);
+            border-radius: 8px 8px 4px 4px;
             cursor: pointer;
-            box-shadow: -8px 0 15px rgba(0, 0, 0, 0.9), inset 0 0 10px rgba(0, 0, 0, 0.5);
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
             transform-origin: bottom center;
+            /* Heavy realistic 3D shadowing */
+            box-shadow:
+                -10px 0 20px rgba(0, 0, 0, 0.9),
+                inset 5px 0 10px rgba(255, 255, 255, 0.1),
+                inset -5px 0 15px rgba(0, 0, 0, 0.5),
+                inset 0 15px 15px rgba(0, 0, 0, 0.7);
+            /* Leather texture overlay via repeating-linear-gradient */
+            background-color: var(--book-color, #4a151b);
+        }
+
+        /* The horizontal ribbands spanning the spine */
+        .book::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                repeating-linear-gradient(transparent,
+                    transparent 40px,
+                    rgba(0, 0, 0, 0.4) 42px,
+                    rgba(255, 255, 255, 0.1) 43px,
+                    rgba(0, 0, 0, 0.6) 45px,
+                    transparent 46px);
+            border-radius: inherit;
+            pointer-events: none;
         }
 
         .book-spine {
-            font-size: 2.2rem;
-            color: #c9a959;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+            font-size: 2.5rem;
+            font-family: 'Times New Roman', serif;
+            position: relative;
+            z-index: 2;
+
+            /* Gold Foil Emboss Effect */
+            background: linear-gradient(to bottom, #f9f5bc 0%, #c9a959 40%, #8c6a28 60%, #fff 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+
+            /* Inner shadow for the indent, drop shadow for depth */
+            filter: drop-shadow(0px -1px 1px rgba(0, 0, 0, 0.8)) drop-shadow(0px 1px 0px rgba(255, 255, 255, 0.2));
+            transform: translateY(-10px);
         }
 
         /* Distinct Books */
         #label-star {
-            background: linear-gradient(to right, #1b3a4b 0%, #2c5670 50%, #1b3a4b 100%);
+            --book-color: #1b3a4b;
             height: 210px;
         }
 
         #label-sun {
-            background: linear-gradient(to right, #4a151b 0%, #6b2229 50%, #4a151b 100%);
+            --book-color: #6b2229;
             height: 250px;
         }
 
         #label-moon {
-            background: linear-gradient(to right, #3e2723 0%, #4e342e 50%, #3e2723 100%);
+            --book-color: #3e2723;
             height: 230px;
         }
 
         #label-compass {
-            background: linear-gradient(to right, #2a3b2c 0%, #3a503d 50%, #2a3b2c 100%);
+            --book-color: #2a3b2c;
             height: 240px;
         }
 
         #label-hourglass {
-            background: linear-gradient(to right, #5d4037 0%, #795548 50%, #5d4037 100%);
+            --book-color: #5d4037;
             height: 260px;
         }
 
         #label-skull {
-            background: linear-gradient(to right, #212121 0%, #3a3a3a 50%, #212121 100%);
+            --book-color: #212121;
             height: 200px;
         }
 
@@ -418,22 +468,22 @@
             <div class="shelf-container">
                 <div class="shelf">
                     <label for="book-star" class="book" id="label-star">
-                        <span class="book-spine">⭐</span>
+                        <span class="book-spine">★</span>
                     </label>
                     <label for="book-sun" class="book" id="label-sun">
-                        <span class="book-spine">☀️</span>
+                        <span class="book-spine">☼</span>
                     </label>
                     <label for="book-moon" class="book" id="label-moon">
-                        <span class="book-spine">🌙</span>
+                        <span class="book-spine">☾</span>
                     </label>
                     <label for="book-compass" class="book" id="label-compass">
-                        <span class="book-spine">🧭</span>
+                        <span class="book-spine" style="font-size: 3rem; transform: translateY(-7px);">✛</span>
                     </label>
                     <label for="book-hourglass" class="book" id="label-hourglass">
-                        <span class="book-spine">⏳</span>
+                        <span class="book-spine">⧖</span>
                     </label>
                     <label for="book-skull" class="book" id="label-skull">
-                        <span class="book-spine">💀</span>
+                        <span class="book-spine">☠</span>
                     </label>
                 </div>
             </div>
