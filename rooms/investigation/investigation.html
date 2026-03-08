@@ -1,677 +1,752 @@
 <!doctype html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mystery Chamber - The Investigation Board</title>
-    <meta name="description" content="An immersive web-based escape room experience. Solve puzzles, find clues, and escape the Mystery Chamber." />
+    <meta
+      name="description"
+      content="An immersive web-based escape room experience. Solve puzzles, find clues, and escape the Mystery Chamber."
+    />
     <!-- Preconnect to Google Fonts to speed up FCP -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-        href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Permanent+Marker&display=swap"
-        rel="stylesheet" />
+      href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Permanent+Marker&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            background-color: #0d0d0d;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Courier Prime', monospace;
-            overflow: hidden;
-            color: #333;
-        }
+      body {
+        background-color: #0d0d0d;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: "Courier Prime", monospace;
+        overflow: hidden;
+        color: #333;
+      }
 
-        .hidden-state {
-            display: none;
-        }
+      .hidden-state {
+        display: none;
+      }
 
-        .board-wrapper {
-            position: relative;
-            width: 960px;
-            height: 540px;
-            background-image: url('../../assets/images/investigation/Corkboard_bg.png');
-            background-size: cover;
-            background-position: center;
-            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.8), 0 0 50px rgba(0, 0, 0, 0.9);
-            border: 20px solid #3d2b1f;
-            border-radius: 10px;
-        }
+      .board-wrapper {
+        position: relative;
+        width: 960px;
+        height: 540px;
+        background-image: url("../../assets/images/investigation/Corkboard_bg.png");
+        background-size: cover;
+        background-position: center;
+        box-shadow:
+          inset 0 0 100px rgba(0, 0, 0, 0.8),
+          0 0 50px rgba(0, 0, 0, 0.9);
+        border: 20px solid #3d2b1f;
+        border-radius: 10px;
+      }
 
-        /* --- RED STRINGS --- */
-        .string {
-            position: absolute;
-            height: 4px;
-            background-color: #c0392b;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.6);
-            transform-origin: 0 50%;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s ease-in-out;
-            z-index: 5;
-            border-radius: 2px;
-        }
+      /* --- RED STRINGS --- */
+      .string {
+        position: absolute;
+        height: 4px;
+        background-color: #c0392b;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.6);
+        transform-origin: 0 50%;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s ease-in-out;
+        z-index: 5;
+        border-radius: 2px;
+      }
 
-        /* S-A strings */
+      /* S-A strings */
+      .string-S-A-W-Dagger {
+        left: 160px;
+        top: 120px;
+        width: 320px;
+        transform: rotate(0deg);
+      }
+
+      .string-S-A-W-Poison {
+        left: 160px;
+        top: 120px;
+        width: 347px;
+        transform: rotate(23.03deg);
+      }
+
+      .string-S-A-W-Revolver {
+        left: 160px;
+        top: 120px;
+        width: 419px;
+        transform: rotate(40.36deg);
+      }
+
+      /* S-B strings */
+      .string-S-B-W-Dagger {
+        left: 160px;
+        top: 256px;
+        width: 347px;
+        transform: rotate(-23.03deg);
+      }
+
+      .string-S-B-W-Poison {
+        left: 160px;
+        top: 256px;
+        width: 320px;
+        transform: rotate(0deg);
+      }
+
+      .string-S-B-W-Revolver {
+        left: 160px;
+        top: 256px;
+        width: 347px;
+        transform: rotate(23.03deg);
+      }
+
+      /* S-C strings */
+      .string-S-C-W-Dagger {
+        left: 160px;
+        top: 392px;
+        width: 419px;
+        transform: rotate(-40.36deg);
+      }
+
+      .string-S-C-W-Poison {
+        left: 160px;
+        top: 392px;
+        width: 347px;
+        transform: rotate(-23.03deg);
+      }
+
+      .string-S-C-W-Revolver {
+        left: 160px;
+        top: 392px;
+        width: 320px;
+        transform: rotate(0deg);
+      }
+
+      /* W-Dagger strings */
+      .string-W-Dagger-L-Lib {
+        left: 480px;
+        top: 120px;
+        width: 320px;
+        transform: rotate(0deg);
+      }
+
+      .string-W-Dagger-L-Con {
+        left: 480px;
+        top: 120px;
+        width: 347px;
+        transform: rotate(23.03deg);
+      }
+
+      .string-W-Dagger-L-Bil {
+        left: 480px;
+        top: 120px;
+        width: 419px;
+        transform: rotate(40.36deg);
+      }
+
+      /* W-Poison strings */
+      .string-W-Poison-L-Lib {
+        left: 480px;
+        top: 256px;
+        width: 347px;
+        transform: rotate(-23.03deg);
+      }
+
+      .string-W-Poison-L-Con {
+        left: 480px;
+        top: 256px;
+        width: 320px;
+        transform: rotate(0deg);
+      }
+
+      .string-W-Poison-L-Bil {
+        left: 480px;
+        top: 256px;
+        width: 347px;
+        transform: rotate(23.03deg);
+      }
+
+      .string-W-Revolver-L-Lib {
+        left: 480px;
+        top: 392px;
+        width: 419px;
+        transform: rotate(-40.36deg);
+      }
+
+      .string-W-Revolver-L-Con {
+        left: 480px;
+        top: 392px;
+        width: 347px;
+        transform: rotate(-23.03deg);
+      }
+
+      .string-W-Revolver-L-Bil {
+        left: 480px;
+        top: 392px;
+        width: 320px;
+        transform: rotate(0deg);
+      }
+
+      /* --- EVIDENCE NODES --- */
+      .node {
+        position: absolute;
+        z-index: 10;
+      }
+
+      .pushpin-label {
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        width: 20px;
+        height: 20px;
+        background: #bdc3c7;
+        /* dull silver initially */
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow:
+          inset -4px -4px 6px rgba(0, 0, 0, 0.5),
+          3px 5px 5px rgba(0, 0, 0, 0.5);
+        z-index: 20;
+        transition: all 0.3s;
+      }
+
+      .pushpin-label::after {
+        content: "";
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        width: 5px;
+        height: 5px;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 50%;
+      }
+
+      .pushpin-label:hover {
+        transform: scale(1.1);
+      }
+
+      .evidence {
+        position: absolute;
+        top: -15px;
+        left: -75px;
+        width: 150px;
+        background: #fdfbf7;
+        padding: 20px 10px 10px 10px;
+        box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.5);
+        text-align: center;
+      }
+
+      .evidence img {
+        width: 100%;
+        height: auto;
+        border: 1px solid #ccc;
+        margin-bottom: 5px;
+        filter: sepia(0.3) contrast(1.1);
+      }
+
+      .evidence.polaroid {
+        width: 110px;
+        left: -55px;
+        padding-bottom: 10px;
+      }
+
+      .evidence h4 {
+        font-size: 14px;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+
+      .evidence p {
+        font-size: 11px;
+        line-height: 1.2;
+        color: #555;
+      }
+
+      .note {
+        background: #fff9c4;
+        padding: 15px;
+        font-family: "Permanent Marker", cursive;
+        font-size: 14px;
+        color: #d32f2f;
+      }
+
+      .typewriter {
+        font-family: "Courier Prime", monospace;
+        background: #e8e6e1;
+        padding: 15px;
+        border-left: 2px solid #ccc;
+      }
+
+      /* Node Placements */
+      #node-S-A {
+        left: 160px;
+        top: 120px;
+      }
+
+      #node-S-B {
+        left: 160px;
+        top: 256px;
+      }
+
+      #node-S-C {
+        left: 160px;
+        top: 392px;
+      }
+
+      #node-W-Dagger {
+        left: 480px;
+        top: 120px;
+      }
+
+      #node-W-Poison {
+        left: 480px;
+        top: 256px;
+      }
+
+      #node-W-Revolver {
+        left: 480px;
+        top: 392px;
+      }
+
+      #node-L-Lib {
+        left: 800px;
+        top: 120px;
+      }
+
+      #node-L-Con {
+        left: 800px;
+        top: 256px;
+      }
+
+      #node-L-Bil {
+        left: 800px;
+        top: 392px;
+      }
+
+      .tilt-left {
+        transform: rotate(-4deg);
+      }
+
+      .tilt-right {
+        transform: rotate(3deg);
+      }
+
+      .tilt-more {
+        transform: rotate(-7deg);
+      }
+
+      /* --- INTERACTION LOGIC --- */
+
+      /* Pin Active State */
+      #pin-S-A:checked ~ .board-wrapper #node-S-A .pushpin-label,
+      #pin-S-B:checked ~ .board-wrapper #node-S-B .pushpin-label,
+      #pin-S-C:checked ~ .board-wrapper #node-S-C .pushpin-label,
+      #pin-W-Dagger:checked ~ .board-wrapper #node-W-Dagger .pushpin-label,
+      #pin-W-Poison:checked ~ .board-wrapper #node-W-Poison .pushpin-label,
+      #pin-W-Revolver:checked ~ .board-wrapper #node-W-Revolver .pushpin-label,
+      #pin-L-Lib:checked ~ .board-wrapper #node-L-Lib .pushpin-label,
+      #pin-L-Con:checked ~ .board-wrapper #node-L-Con .pushpin-label,
+      #pin-L-Bil:checked ~ .board-wrapper #node-L-Bil .pushpin-label {
+        background: #e74c3c;
+        box-shadow:
+          inset -4px -4px 6px rgba(0, 0, 0, 0.3),
+          0 0 10px #ff0000,
+          3px 5px 5px rgba(0, 0, 0, 0.5);
+      }
+
+      /* Reveal Strings */
+      #pin-S-A:checked
+        ~ #pin-W-Dagger:checked
+        ~ .board-wrapper
         .string-S-A-W-Dagger {
-            left: 160px;
-            top: 120px;
-            width: 320px;
-            transform: rotate(0.0deg);
-        }
+        opacity: 1;
+      }
 
+      #pin-S-A:checked
+        ~ #pin-W-Poison:checked
+        ~ .board-wrapper
         .string-S-A-W-Poison {
-            left: 160px;
-            top: 120px;
-            width: 347px;
-            transform: rotate(23.03deg);
-        }
+        opacity: 1;
+      }
 
+      #pin-S-A:checked
+        ~ #pin-W-Revolver:checked
+        ~ .board-wrapper
         .string-S-A-W-Revolver {
-            left: 160px;
-            top: 120px;
-            width: 419px;
-            transform: rotate(40.36deg);
-        }
+        opacity: 1;
+      }
 
-        /* S-B strings */
+      #pin-S-B:checked
+        ~ #pin-W-Dagger:checked
+        ~ .board-wrapper
         .string-S-B-W-Dagger {
-            left: 160px;
-            top: 256px;
-            width: 347px;
-            transform: rotate(-23.03deg);
-        }
+        opacity: 1;
+      }
 
+      #pin-S-B:checked
+        ~ #pin-W-Poison:checked
+        ~ .board-wrapper
         .string-S-B-W-Poison {
-            left: 160px;
-            top: 256px;
-            width: 320px;
-            transform: rotate(0.0deg);
-        }
+        opacity: 1;
+      }
 
+      #pin-S-B:checked
+        ~ #pin-W-Revolver:checked
+        ~ .board-wrapper
         .string-S-B-W-Revolver {
-            left: 160px;
-            top: 256px;
-            width: 347px;
-            transform: rotate(23.03deg);
-        }
+        opacity: 1;
+      }
 
-        /* S-C strings */
+      #pin-S-C:checked
+        ~ #pin-W-Dagger:checked
+        ~ .board-wrapper
         .string-S-C-W-Dagger {
-            left: 160px;
-            top: 392px;
-            width: 419px;
-            transform: rotate(-40.36deg);
-        }
+        opacity: 1;
+      }
 
+      #pin-S-C:checked
+        ~ #pin-W-Poison:checked
+        ~ .board-wrapper
         .string-S-C-W-Poison {
-            left: 160px;
-            top: 392px;
-            width: 347px;
-            transform: rotate(-23.03deg);
-        }
+        opacity: 1;
+      }
 
+      #pin-S-C:checked
+        ~ #pin-W-Revolver:checked
+        ~ .board-wrapper
         .string-S-C-W-Revolver {
-            left: 160px;
-            top: 392px;
-            width: 320px;
-            transform: rotate(0.0deg);
-        }
+        opacity: 1;
+      }
 
-        /* W-Dagger strings */
+      #pin-W-Dagger:checked
+        ~ #pin-L-Lib:checked
+        ~ .board-wrapper
         .string-W-Dagger-L-Lib {
-            left: 480px;
-            top: 120px;
-            width: 320px;
-            transform: rotate(0.0deg);
-        }
+        opacity: 1;
+      }
 
+      #pin-W-Dagger:checked
+        ~ #pin-L-Con:checked
+        ~ .board-wrapper
         .string-W-Dagger-L-Con {
-            left: 480px;
-            top: 120px;
-            width: 347px;
-            transform: rotate(23.03deg);
-        }
+        opacity: 1;
+      }
 
+      #pin-W-Dagger:checked
+        ~ #pin-L-Bil:checked
+        ~ .board-wrapper
         .string-W-Dagger-L-Bil {
-            left: 480px;
-            top: 120px;
-            width: 419px;
-            transform: rotate(40.36deg);
-        }
+        opacity: 1;
+      }
 
-        /* W-Poison strings */
+      #pin-W-Poison:checked
+        ~ #pin-L-Lib:checked
+        ~ .board-wrapper
         .string-W-Poison-L-Lib {
-            left: 480px;
-            top: 256px;
-            width: 347px;
-            transform: rotate(-23.03deg);
-        }
+        opacity: 1;
+      }
 
+      #pin-W-Poison:checked
+        ~ #pin-L-Con:checked
+        ~ .board-wrapper
         .string-W-Poison-L-Con {
-            left: 480px;
-            top: 256px;
-            width: 320px;
-            transform: rotate(0.0deg);
-        }
+        opacity: 1;
+      }
 
+      #pin-W-Poison:checked
+        ~ #pin-L-Bil:checked
+        ~ .board-wrapper
         .string-W-Poison-L-Bil {
-            left: 480px;
-            top: 256px;
-            width: 347px;
-            transform: rotate(23.03deg);
-        }
+        opacity: 1;
+      }
 
+      #pin-W-Revolver:checked
+        ~ #pin-L-Lib:checked
+        ~ .board-wrapper
         .string-W-Revolver-L-Lib {
-            left: 480px;
-            top: 392px;
-            width: 419px;
-            transform: rotate(-40.36deg);
-        }
+        opacity: 1;
+      }
 
+      #pin-W-Revolver:checked
+        ~ #pin-L-Con:checked
+        ~ .board-wrapper
         .string-W-Revolver-L-Con {
-            left: 480px;
-            top: 392px;
-            width: 347px;
-            transform: rotate(-23.03deg);
-        }
+        opacity: 1;
+      }
 
+      #pin-W-Revolver:checked
+        ~ #pin-L-Bil:checked
+        ~ .board-wrapper
         .string-W-Revolver-L-Bil {
-            left: 480px;
-            top: 392px;
-            width: 320px;
-            transform: rotate(0.0deg);
-        }
+        opacity: 1;
+      }
 
+      /* --- THE WIN STATE --- */
+      .arrest-warrant {
+        position: absolute;
+        bottom: 170px;
+        left: 50px;
+        width: 170px;
+        height: 100px;
+        background: #d4c4a8;
+        border: 2px solid #a89470;
+        opacity: 0;
+        pointer-events: none;
+        text-decoration: none;
+        color: #555;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 16px;
+        box-shadow: 3px 5px 15px rgba(0, 0, 0, 0.6);
+        transform: translateX(-50%) rotate(-8deg);
+        transition: all 0.5s ease;
+        z-index: 30;
+      }
 
-        /* --- EVIDENCE NODES --- */
-        .node {
-            position: absolute;
-            z-index: 10;
-        }
+      .arrest-warrant::before {
+        content: "TOP SECRET";
+        position: absolute;
+        top: -18px;
+        left: 10px;
+        background: #d4c4a8;
+        padding: 2px 8px;
+        font-size: 10px;
+        border: 2px solid #a89470;
+        border-bottom: none;
+      }
 
-        .pushpin-label {
-            position: absolute;
-            top: -10px;
-            left: -10px;
-            width: 20px;
-            height: 20px;
-            background: #bdc3c7;
-            /* dull silver initially */
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: inset -4px -4px 6px rgba(0, 0, 0, 0.5), 3px 5px 5px rgba(0, 0, 0, 0.5);
-            z-index: 20;
-            transition: all 0.3s;
-        }
-
-        .pushpin-label::after {
-            content: '';
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            width: 5px;
-            height: 5px;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 50%;
-        }
-
-        .pushpin-label:hover {
-            transform: scale(1.1);
-        }
-
-        .evidence {
-            position: absolute;
-            top: -15px;
-            left: -75px;
-            width: 150px;
-            background: #fdfbf7;
-            padding: 20px 10px 10px 10px;
-            box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.5);
-            text-align: center;
-        }
-
-        .evidence img {
-            width: 100%;
-            height: auto;
-            border: 1px solid #ccc;
-            margin-bottom: 5px;
-            filter: sepia(0.3) contrast(1.1);
-        }
-
-        .evidence.polaroid {
-            width: 110px;
-            left: -55px;
-            padding-bottom: 10px;
-        }
-
-        .evidence h4 {
-            font-size: 14px;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .evidence p {
-            font-size: 11px;
-            line-height: 1.2;
-            color: #555;
-        }
-
-        .note {
-            background: #fff9c4;
-            padding: 15px;
-            font-family: 'Permanent Marker', cursive;
-            font-size: 14px;
-            color: #d32f2f;
-        }
-
-        .typewriter {
-            font-family: 'Courier Prime', monospace;
-            background: #e8e6e1;
-            padding: 15px;
-            border-left: 2px solid #ccc;
-        }
-
-        /* Node Placements */
-        #node-S-A {
-            left: 160px;
-            top: 120px;
-        }
-
-        #node-S-B {
-            left: 160px;
-            top: 256px;
-        }
-
-        #node-S-C {
-            left: 160px;
-            top: 392px;
-        }
-
-        #node-W-Dagger {
-            left: 480px;
-            top: 120px;
-        }
-
-        #node-W-Poison {
-            left: 480px;
-            top: 256px;
-        }
-
-        #node-W-Revolver {
-            left: 480px;
-            top: 392px;
-        }
-
-        #node-L-Lib {
-            left: 800px;
-            top: 120px;
-        }
-
-        #node-L-Con {
-            left: 800px;
-            top: 256px;
-        }
-
-        #node-L-Bil {
-            left: 800px;
-            top: 392px;
-        }
-
-        .tilt-left {
-            transform: rotate(-4deg);
-        }
-
-        .tilt-right {
-            transform: rotate(3deg);
-        }
-
-        .tilt-more {
-            transform: rotate(-7deg);
-        }
-
-
-        /* --- INTERACTION LOGIC --- */
-
-        /* Pin Active State */
-        #pin-S-A:checked~.board-wrapper #node-S-A .pushpin-label,
-        #pin-S-B:checked~.board-wrapper #node-S-B .pushpin-label,
-        #pin-S-C:checked~.board-wrapper #node-S-C .pushpin-label,
-        #pin-W-Dagger:checked~.board-wrapper #node-W-Dagger .pushpin-label,
-        #pin-W-Poison:checked~.board-wrapper #node-W-Poison .pushpin-label,
-        #pin-W-Revolver:checked~.board-wrapper #node-W-Revolver .pushpin-label,
-        #pin-L-Lib:checked~.board-wrapper #node-L-Lib .pushpin-label,
-        #pin-L-Con:checked~.board-wrapper #node-L-Con .pushpin-label,
-        #pin-L-Bil:checked~.board-wrapper #node-L-Bil .pushpin-label {
-            background: #e74c3c;
-            box-shadow: inset -4px -4px 6px rgba(0, 0, 0, 0.3), 0 0 10px #ff0000, 3px 5px 5px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Reveal Strings */
-        #pin-S-A:checked~#pin-W-Dagger:checked~.board-wrapper .string-S-A-W-Dagger {
-            opacity: 1;
-        }
-
-        #pin-S-A:checked~#pin-W-Poison:checked~.board-wrapper .string-S-A-W-Poison {
-            opacity: 1;
-        }
-
-        #pin-S-A:checked~#pin-W-Revolver:checked~.board-wrapper .string-S-A-W-Revolver {
-            opacity: 1;
-        }
-
-        #pin-S-B:checked~#pin-W-Dagger:checked~.board-wrapper .string-S-B-W-Dagger {
-            opacity: 1;
-        }
-
-        #pin-S-B:checked~#pin-W-Poison:checked~.board-wrapper .string-S-B-W-Poison {
-            opacity: 1;
-        }
-
-        #pin-S-B:checked~#pin-W-Revolver:checked~.board-wrapper .string-S-B-W-Revolver {
-            opacity: 1;
-        }
-
-        #pin-S-C:checked~#pin-W-Dagger:checked~.board-wrapper .string-S-C-W-Dagger {
-            opacity: 1;
-        }
-
-        #pin-S-C:checked~#pin-W-Poison:checked~.board-wrapper .string-S-C-W-Poison {
-            opacity: 1;
-        }
-
-        #pin-S-C:checked~#pin-W-Revolver:checked~.board-wrapper .string-S-C-W-Revolver {
-            opacity: 1;
-        }
-
-        #pin-W-Dagger:checked~#pin-L-Lib:checked~.board-wrapper .string-W-Dagger-L-Lib {
-            opacity: 1;
-        }
-
-        #pin-W-Dagger:checked~#pin-L-Con:checked~.board-wrapper .string-W-Dagger-L-Con {
-            opacity: 1;
-        }
-
-        #pin-W-Dagger:checked~#pin-L-Bil:checked~.board-wrapper .string-W-Dagger-L-Bil {
-            opacity: 1;
-        }
-
-        #pin-W-Poison:checked~#pin-L-Lib:checked~.board-wrapper .string-W-Poison-L-Lib {
-            opacity: 1;
-        }
-
-        #pin-W-Poison:checked~#pin-L-Con:checked~.board-wrapper .string-W-Poison-L-Con {
-            opacity: 1;
-        }
-
-        #pin-W-Poison:checked~#pin-L-Bil:checked~.board-wrapper .string-W-Poison-L-Bil {
-            opacity: 1;
-        }
-
-        #pin-W-Revolver:checked~#pin-L-Lib:checked~.board-wrapper .string-W-Revolver-L-Lib {
-            opacity: 1;
-        }
-
-        #pin-W-Revolver:checked~#pin-L-Con:checked~.board-wrapper .string-W-Revolver-L-Con {
-            opacity: 1;
-        }
-
-        #pin-W-Revolver:checked~#pin-L-Bil:checked~.board-wrapper .string-W-Revolver-L-Bil {
-            opacity: 1;
-        }
-
-
-        /* --- THE WIN STATE --- */
+      /* CORRECT CONNECTION: Suspect B + Poison + Library */
+      #pin-S-A:not(:checked)
+        ~ #pin-S-B:checked
+        ~ #pin-S-C:not(:checked)
+        ~ #pin-W-Dagger:not(:checked)
+        ~ #pin-W-Poison:checked
+        ~ #pin-W-Revolver:not(:checked)
+        ~ #pin-L-Lib:checked
+        ~ #pin-L-Con:not(:checked)
+        ~ #pin-L-Bil:not(:checked)
+        ~ .board-wrapper
         .arrest-warrant {
-            position: absolute;
-            bottom: 170px;
-            left: 50px;
-            width: 170px;
-            height: 100px;
-            background: #d4c4a8;
-            border: 2px solid #a89470;
-            opacity: 0;
-            pointer-events: none;
-            text-decoration: none;
-            color: #555;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 16px;
-            box-shadow: 3px 5px 15px rgba(0, 0, 0, 0.6);
-            transform: translateX(-50%) rotate(-8deg);
-            transition: all 0.5s ease;
-            z-index: 30;
+        opacity: 1;
+        pointer-events: auto;
+        color: #8b0000;
+        border-color: #8b0000;
+        box-shadow:
+          0 0 30px rgba(255, 0, 0, 0.4),
+          3px 5px 15px rgba(0, 0, 0, 0.6);
+        animation: pulse-warrant 2s infinite;
+      }
+
+      .arrest-warrant:hover {
+        transform: translateX(-50%) rotate(-4deg) scale(1.05);
+      }
+
+      @keyframes pulse-warrant {
+        0% {
+          filter: brightness(1);
         }
 
-        .arrest-warrant::before {
-            content: 'TOP SECRET';
-            position: absolute;
-            top: -18px;
-            left: 10px;
-            background: #d4c4a8;
-            padding: 2px 8px;
-            font-size: 10px;
-            border: 2px solid #a89470;
-            border-bottom: none;
+        50% {
+          filter: brightness(1.2);
         }
 
-        /* CORRECT CONNECTION: Suspect B + Poison + Library */
-        #pin-S-A:not(:checked)~#pin-S-B:checked~#pin-S-C:not(:checked)~#pin-W-Dagger:not(:checked)~#pin-W-Poison:checked~#pin-W-Revolver:not(:checked)~#pin-L-Lib:checked~#pin-L-Con:not(:checked)~#pin-L-Bil:not(:checked)~.board-wrapper .arrest-warrant {
-            opacity: 1;
-            pointer-events: auto;
-            color: #8b0000;
-            border-color: #8b0000;
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.4), 3px 5px 15px rgba(0, 0, 0, 0.6);
-            animation: pulse-warrant 2s infinite;
+        100% {
+          filter: brightness(1);
         }
+      }
 
-        .arrest-warrant:hover {
-            transform: translateX(-50%) rotate(-4deg) scale(1.05);
+      /* UI overlay */
+      .back-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        color: #ddd;
+        text-decoration: none;
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 600;
+        font-size: 1.2rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+        z-index: 100;
+      }
+
+      .scene-instruction {
+        position: absolute;
+        top: 2rem;
+        text-align: center;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.1rem;
+        max-width: 600px;
+        z-index: 100;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 1);
+        background: rgba(10, 10, 10, 0.7);
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        border: 1px solid rgba(232, 186, 48, 0.3);
+        pointer-events: none;
+      }
+
+      /* Mobile Responsiveness */
+      @media (max-width: 1000px), (max-height: 580px) {
+        .board-wrapper {
+          transform: scale(min(calc(100vw / 1000), calc(100vh / 580)));
         }
-
-        @keyframes pulse-warrant {
-            0% {
-                filter: brightness(1);
-            }
-
-            50% {
-                filter: brightness(1.2);
-            }
-
-            100% {
-                filter: brightness(1);
-            }
-        }
-
-        /* UI overlay */
-        .back-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            color: #ddd;
-            text-decoration: none;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 600;
-            font-size: 1.2rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-            z-index: 100;
-        }
-
-        .scene-instruction {
-            position: absolute;
-            top: 2rem;
-            text-align: center;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1.1rem;
-            max-width: 600px;
-            z-index: 100;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 1);
-            background: rgba(10, 10, 10, 0.7);
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            border: 1px solid rgba(232, 186, 48, 0.3);
-            pointer-events: none;
-        }
-
-        /* Mobile Responsiveness */
-        @media (max-width: 1000px),
-        (max-height: 580px) {
-            .board-wrapper {
-                transform: scale(min(calc(100vw / 1000), calc(100vh / 580)));
-            }
-        }
+      }
     </style>
-</head>
+  </head>
 
-<body>
-
+  <body>
     <a href="../../index.html" class="back-btn">&larr; Retreat</a>
 
     <!-- THE LOGIC MATRIX -->
-    <input type="checkbox" id="pin-S-A" class="hidden-state">
-    <input type="checkbox" id="pin-S-B" class="hidden-state">
-    <input type="checkbox" id="pin-S-C" class="hidden-state">
+    <input type="checkbox" id="pin-S-A" class="hidden-state" />
+    <input type="checkbox" id="pin-S-B" class="hidden-state" />
+    <input type="checkbox" id="pin-S-C" class="hidden-state" />
 
-    <input type="checkbox" id="pin-W-Dagger" class="hidden-state">
-    <input type="checkbox" id="pin-W-Poison" class="hidden-state">
-    <input type="checkbox" id="pin-W-Revolver" class="hidden-state">
+    <input type="checkbox" id="pin-W-Dagger" class="hidden-state" />
+    <input type="checkbox" id="pin-W-Poison" class="hidden-state" />
+    <input type="checkbox" id="pin-W-Revolver" class="hidden-state" />
 
-    <input type="checkbox" id="pin-L-Lib" class="hidden-state">
-    <input type="checkbox" id="pin-L-Con" class="hidden-state">
-    <input type="checkbox" id="pin-L-Bil" class="hidden-state">
+    <input type="checkbox" id="pin-L-Lib" class="hidden-state" />
+    <input type="checkbox" id="pin-L-Con" class="hidden-state" />
+    <input type="checkbox" id="pin-L-Bil" class="hidden-state" />
 
     <!-- THE BOARD -->
     <div class="board-wrapper">
+      <!-- PRE-DRAWN STRINGS -->
+      <div class="string string-S-A-W-Dagger"></div>
+      <div class="string string-S-A-W-Poison"></div>
+      <div class="string string-S-A-W-Revolver"></div>
 
-        <!-- PRE-DRAWN STRINGS -->
-        <div class="string string-S-A-W-Dagger"></div>
-        <div class="string string-S-A-W-Poison"></div>
-        <div class="string string-S-A-W-Revolver"></div>
+      <div class="string string-S-B-W-Dagger"></div>
+      <div class="string string-S-B-W-Poison"></div>
+      <div class="string string-S-B-W-Revolver"></div>
 
-        <div class="string string-S-B-W-Dagger"></div>
-        <div class="string string-S-B-W-Poison"></div>
-        <div class="string string-S-B-W-Revolver"></div>
+      <div class="string string-S-C-W-Dagger"></div>
+      <div class="string string-S-C-W-Poison"></div>
+      <div class="string string-S-C-W-Revolver"></div>
 
-        <div class="string string-S-C-W-Dagger"></div>
-        <div class="string string-S-C-W-Poison"></div>
-        <div class="string string-S-C-W-Revolver"></div>
+      <div class="string string-W-Dagger-L-Lib"></div>
+      <div class="string string-W-Dagger-L-Con"></div>
+      <div class="string string-W-Dagger-L-Bil"></div>
 
-        <div class="string string-W-Dagger-L-Lib"></div>
-        <div class="string string-W-Dagger-L-Con"></div>
-        <div class="string string-W-Dagger-L-Bil"></div>
+      <div class="string string-W-Poison-L-Lib"></div>
+      <div class="string string-W-Poison-L-Con"></div>
+      <div class="string string-W-Poison-L-Bil"></div>
 
-        <div class="string string-W-Poison-L-Lib"></div>
-        <div class="string string-W-Poison-L-Con"></div>
-        <div class="string string-W-Poison-L-Bil"></div>
+      <div class="string string-W-Revolver-L-Lib"></div>
+      <div class="string string-W-Revolver-L-Con"></div>
+      <div class="string string-W-Revolver-L-Bil"></div>
 
-        <div class="string string-W-Revolver-L-Lib"></div>
-        <div class="string string-W-Revolver-L-Con"></div>
-        <div class="string string-W-Revolver-L-Bil"></div>
+      <!-- EVIDENCE NODES -->
 
-        <!-- EVIDENCE NODES -->
-
-        <!-- SUSPECTS -->
-        <div class="node" id="node-S-A">
-            <label for="pin-S-A" class="pushpin-label"></label>
-            <div class="evidence polaroid tilt-left">
-                <img src="../../assets/images/investigation/suspect_A.png" alt="Suspect A">
-                <h4>Vincent Sullivan</h4>
-                <p>Alibi: Seen at Conservatory 9PM.</p>
-            </div>
+      <!-- SUSPECTS -->
+      <div class="node" id="node-S-A">
+        <label for="pin-S-A" class="pushpin-label"></label>
+        <div class="evidence polaroid tilt-left">
+          <img
+            src="../../assets/images/investigation/suspect_A.png"
+            alt="Suspect A"
+          />
+          <h4>Vincent Sullivan</h4>
+          <p>Alibi: Seen at Conservatory 9PM.</p>
         </div>
+      </div>
 
-        <div class="node" id="node-S-B">
-            <label for="pin-S-B" class="pushpin-label"></label>
-            <div class="evidence polaroid tilt-right">
-                <img src="../../assets/images/investigation/suspect_B.png" alt="Suspect B">
-                <h4>Eleanor Vance</h4>
-                <p>Motive: Inheritance.</p>
-            </div>
+      <div class="node" id="node-S-B">
+        <label for="pin-S-B" class="pushpin-label"></label>
+        <div class="evidence polaroid tilt-right">
+          <img
+            src="../../assets/images/investigation/suspect_B.png"
+            alt="Suspect B"
+          />
+          <h4>Eleanor Vance</h4>
+          <p>Motive: Inheritance.</p>
         </div>
+      </div>
 
-        <div class="node" id="node-S-C">
-            <label for="pin-S-C" class="pushpin-label"></label>
-            <div class="evidence polaroid tilt-more">
-                <img src="../../assets/images/investigation/suspect_C.png" alt="Suspect C">
-                <h4>Arthur Pendelton</h4>
-                <p>Prints found on Revolver.</p>
-            </div>
+      <div class="node" id="node-S-C">
+        <label for="pin-S-C" class="pushpin-label"></label>
+        <div class="evidence polaroid tilt-more">
+          <img
+            src="../../assets/images/investigation/suspect_C.png"
+            alt="Suspect C"
+          />
+          <h4>Arthur Pendelton</h4>
+          <p>Prints found on Revolver.</p>
         </div>
+      </div>
 
-        <!-- WEAPONS -->
-        <div class="node" id="node-W-Dagger">
-            <label for="pin-W-Dagger" class="pushpin-label"></label>
-            <div class="evidence typewriter tilt-right">
-                <h4>EVIDENCE: Dagger</h4>
-                <p>Rusted. No prints. Blood matches victim.</p>
-            </div>
+      <!-- WEAPONS -->
+      <div class="node" id="node-W-Dagger">
+        <label for="pin-W-Dagger" class="pushpin-label"></label>
+        <div class="evidence typewriter tilt-right">
+          <h4>EVIDENCE: Dagger</h4>
+          <p>Rusted. No prints. Blood matches victim.</p>
         </div>
+      </div>
 
-        <div class="node" id="node-W-Poison">
-            <label for="pin-W-Poison" class="pushpin-label"></label>
-            <div class="evidence typewriter tilt-left">
-                <h4>EVIDENCE: Arsenic</h4>
-                <p>Purchased by unknown woman on 12th.</p>
-            </div>
+      <div class="node" id="node-W-Poison">
+        <label for="pin-W-Poison" class="pushpin-label"></label>
+        <div class="evidence typewriter tilt-left">
+          <h4>EVIDENCE: Arsenic</h4>
+          <p>Purchased by unknown woman on 12th.</p>
         </div>
+      </div>
 
-        <div class="node" id="node-W-Revolver">
-            <label for="pin-W-Revolver" class="pushpin-label"></label>
-            <div class="evidence typewriter tilt-right">
-                <h4>EVIDENCE: .38 Revolver</h4>
-                <p>Two shots fired. Registered to A. Pendelton.</p>
-            </div>
+      <div class="node" id="node-W-Revolver">
+        <label for="pin-W-Revolver" class="pushpin-label"></label>
+        <div class="evidence typewriter tilt-right">
+          <h4>EVIDENCE: .38 Revolver</h4>
+          <p>Two shots fired. Registered to A. Pendelton.</p>
         </div>
+      </div>
 
-        <!-- LOCATIONS -->
-        <div class="node" id="node-L-Lib">
-            <label for="pin-L-Lib" class="pushpin-label"></label>
-            <div class="evidence note tilt-left">
-                <h4>SCENE: Library</h4>
-                <p>Victim found here. No signs of struggle. Two empty glasses.</p>
-            </div>
+      <!-- LOCATIONS -->
+      <div class="node" id="node-L-Lib">
+        <label for="pin-L-Lib" class="pushpin-label"></label>
+        <div class="evidence note tilt-left">
+          <h4>SCENE: Library</h4>
+          <p>Victim found here. No signs of struggle. Two empty glasses.</p>
         </div>
+      </div>
 
-        <div class="node" id="node-L-Con">
-            <label for="pin-L-Con" class="pushpin-label"></label>
-            <div class="evidence note tilt-right">
-                <h4>SCENE: Conservatory</h4>
-                <p>Window broken from INSIDE. Muddy footprints leading out.</p>
-            </div>
+      <div class="node" id="node-L-Con">
+        <label for="pin-L-Con" class="pushpin-label"></label>
+        <div class="evidence note tilt-right">
+          <h4>SCENE: Conservatory</h4>
+          <p>Window broken from INSIDE. Muddy footprints leading out.</p>
         </div>
+      </div>
 
-        <div class="node" id="node-L-Bil">
-            <label for="pin-L-Bil" class="pushpin-label"></label>
-            <div class="evidence note tilt-more">
-                <h4>SCENE: Billiard Room</h4>
-                <p>Bullet hole in wall. Smells of gunpowder.</p>
-            </div>
+      <div class="node" id="node-L-Bil">
+        <label for="pin-L-Bil" class="pushpin-label"></label>
+        <div class="evidence note tilt-more">
+          <h4>SCENE: Billiard Room</h4>
+          <p>Bullet hole in wall. Smells of gunpowder.</p>
         </div>
+      </div>
 
-
-        <!-- WIN STATE BUTTON -->
-        <a href="investigation-complete.html" class="arrest-warrant">
-            ISSUE ARREST
-        </a>
-
+      <!-- WIN STATE BUTTON -->
+      <a href="investigation-complete.html" class="arrest-warrant">
+        ISSUE ARREST
+      </a>
     </div>
 
     <!-- Scene Instructions -->
     <div class="scene-instruction">
-        Review the evidence on the board. Pin exactly one suspect, one weapon, and one location to connect the clues and
-        issue an arrest.
+      Review the evidence on the board. Pin exactly one suspect, one weapon, and
+      one location to connect the clues and issue an arrest.
     </div>
-
-</body>
-
+  </body>
 </html>

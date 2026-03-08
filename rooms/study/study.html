@@ -1,534 +1,584 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mystery Room - The Victorian Study</title>
-    <meta name="description" content="An immersive web-based escape room experience. Solve puzzles, find clues, and escape the Mystery Chamber." />
+    <meta
+      name="description"
+      content="An immersive web-based escape room experience. Solve puzzles, find clues, and escape the Mystery Chamber."
+    />
     <!-- Preconnect to Google Fonts to speed up FCP -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="../../index.css">
+    <link rel="stylesheet" href="../../index.css" />
     <style>
-        /* Base Study Container Styles */
-        body {
-            background-color: #050505;
-            color: #d4c4a8;
-            overflow: hidden;
-            /* Lock viewport */
-            margin: 0;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
+      /* Base Study Container Styles */
+      body {
+        background-color: #050505;
+        color: #d4c4a8;
+        overflow: hidden;
+        /* Lock viewport */
+        margin: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+      }
+
+      .study-scene {
+        position: relative;
+        width: 100%;
+        max-width: 1400px;
+        /* Wide cinematic layout */
+        aspect-ratio: 16 / 9;
+        background: #000;
+        overflow: hidden;
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+        border: 2px solid #2a1f0b;
+      }
+
+      /* --------------- Global Puzzle State --------------- */
+      /* Hidden checkboxes storing puzzle progression */
+      .puzzle-state {
+        display: none;
+      }
+
+      /* --------------- View Management (:target) --------------- */
+      .view {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        pointer-events: none;
+        /* Ignore interactions when hidden */
+        transition: opacity 1.2s ease-in-out;
+        background-size: cover;
+        background-position: center;
+        z-index: 10;
+      }
+
+      /* Active View Logic */
+      .view:target {
+        opacity: 1;
+        pointer-events: auto;
+        z-index: 20;
+      }
+
+      /* Overview is default. If any view is targeted (by url #hash), overview hides */
+      #overview {
+        opacity: 1;
+        pointer-events: auto;
+        z-index: 15;
+        background-image: url("../../assets/images/study/study_overview.png");
+      }
+
+      /* Magic CSS selector: if ANY element is targeted, find the .study-scene sibling and hide its #overview */
+      :target ~ .study-scene #overview {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* Background Assignments */
+      #desk-view {
+        background-image: url("../../assets/images/study/study_desk.png");
+      }
+
+      #bookshelf-view {
+        background-image: url("../../assets/images/study/study_bookshelf.png");
+      }
+
+      #mechanism-view {
+        background-image: url("../../assets/images/study/study_mechanism.png");
+      }
+
+      /* UI Elements */
+      .back-btn {
+        position: absolute;
+        bottom: 3rem;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 12px 24px;
+        background: rgba(10, 10, 10, 0.85);
+        border: 1px solid #c9a959;
+        color: #c9a959;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-decoration: none;
+        font-size: 1rem;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+        z-index: 50;
+      }
+
+      .back-btn:hover {
+        background: rgba(200, 169, 89, 0.2);
+        box-shadow: 0 0 20px rgba(200, 169, 89, 0.5);
+        color: #fff;
+      }
+
+      /* Interactive Hotspots in Overview */
+      .hotspot {
+        position: absolute;
+        border: 2px solid transparent;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        z-index: 16;
+      }
+
+      .hotspot:hover {
+        border-color: rgba(200, 169, 89, 0.8);
+        background: rgba(200, 169, 89, 0.1);
+        box-shadow: 0 0 30px rgba(200, 169, 89, 0.3) inset;
+      }
+
+      /* Hotspot positioning based on visual mapping */
+      #hotspot-desk {
+        top: 68%;
+        left: 4%;
+        width: 64%;
+        height: 30%;
+      }
+
+      #hotspot-bookshelf {
+        top: 2%;
+        left: 28%;
+        width: 30%;
+        height: 58%;
+      }
+
+      #hotspot-mechanism {
+        top: 3%;
+        left: 62%;
+        width: 18%;
+        height: 47%;
+      }
+
+      /* --------------- Desk View (The Clue) --------------- */
+      .journal-clue {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(244, 235, 216, 0.9);
+        padding: 3rem 4rem;
+        border-radius: 5px;
+        box-shadow:
+          0 10px 40px rgba(0, 0, 0, 0.8),
+          inset 0 0 50px rgba(139, 69, 19, 0.2);
+        color: #3e2723;
+        text-align: center;
+        max-width: 600px;
+        font-family: "Courier New", Courier, monospace;
+        border: 1px solid #c9a959;
+        /* Slight tilt to look like paper resting on desk */
+        transform-origin: center;
+        animation: floatPaper 3s ease-in-out infinite alternate;
+      }
+
+      @keyframes floatPaper {
+        from {
+          transform: translate(-50%, -50%) rotate(-1deg);
         }
 
-        .study-scene {
-            position: relative;
-            width: 100%;
-            max-width: 1400px;
-            /* Wide cinematic layout */
-            aspect-ratio: 16 / 9;
-            background: #000;
-            overflow: hidden;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
-            border: 2px solid #2a1f0b;
+        to {
+          transform: translate(-50%, -49%) rotate(1deg);
         }
+      }
 
-        /* --------------- Global Puzzle State --------------- */
-        /* Hidden checkboxes storing puzzle progression */
-        .puzzle-state {
-            display: none;
-        }
+      .clue-symbols {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        font-size: 3rem;
+      }
 
-        /* --------------- View Management (:target) --------------- */
-        .view {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            pointer-events: none;
-            /* Ignore interactions when hidden */
-            transition: opacity 1.2s ease-in-out;
-            background-size: cover;
-            background-position: center;
-            z-index: 10;
-        }
+      .clue-symbol {
+        color: #5d4037;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+      }
 
-        /* Active View Logic */
-        .view:target {
-            opacity: 1;
-            pointer-events: auto;
-            z-index: 20;
-        }
+      .clue-text {
+        font-size: 1.4rem;
+        line-height: 1.6;
+        font-weight: bold;
+        font-style: italic;
+        letter-spacing: 1px;
+        border-top: 1px dashed #8d6e63;
+        padding-top: 2rem;
+      }
 
-        /* Overview is default. If any view is targeted (by url #hash), overview hides */
-        #overview {
-            opacity: 1;
-            pointer-events: auto;
-            z-index: 15;
-            background-image: url('../../assets/images/study/study_overview.png');
-        }
+      /* --------------- Bookshelf View (The Puzzle) --------------- */
+      .shelf-container {
+        position: absolute;
+        top: 55%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 700px;
+        height: 350px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding-bottom: 20px;
+        /* Removed artificial brown shelf */
+        box-shadow: 0 40px 50px rgba(0, 0, 0, 0.7);
+        background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.5));
+        border-radius: 5px 5px 0 0;
+        perspective: 800px;
+      }
 
-        /* Magic CSS selector: if ANY element is targeted, find the .study-scene sibling and hide its #overview */
-        :target~.study-scene #overview {
-            opacity: 0;
-            pointer-events: none;
-        }
+      .shelf {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 5px;
+        width: 100%;
+        height: 100%;
+      }
 
-        /* Background Assignments */
-        #desk-view {
-            background-image: url('../../assets/images/study/study_desk.png');
-        }
+      .book {
+        margin-top: auto !important;
+        width: 75px;
+        /* Slightly wider */
+        height: 240px;
+        margin: 0 4px;
+        /* Base leather gradient, but more rounded */
+        background: linear-gradient(
+          to right,
+          /* Shadow edge */ rgba(0, 0, 0, 0.8) 0%,
+          /* Light hit */ rgba(255, 255, 255, 0.15) 15%,
+          /* Core color */ transparent 25%,
+          /* Core color */ transparent 75%,
+          /* Second light */ rgba(255, 255, 255, 0.05) 85%,
+          /* Right shadow edge */ rgba(0, 0, 0, 0.9) 100%
+        );
+        border-radius: 8px 8px 4px 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        transform-origin: bottom center;
+        /* Heavy realistic 3D shadowing */
+        box-shadow:
+          -10px 0 20px rgba(0, 0, 0, 0.9),
+          inset 5px 0 10px rgba(255, 255, 255, 0.1),
+          inset -5px 0 15px rgba(0, 0, 0, 0.5),
+          inset 0 15px 15px rgba(0, 0, 0, 0.7);
+        /* Leather texture overlay via repeating-linear-gradient */
+        background-color: var(--book-color, #4a151b);
+      }
 
-        #bookshelf-view {
-            background-image: url('../../assets/images/study/study_bookshelf.png');
-        }
+      /* The horizontal ribbands spanning the spine */
+      .book::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: repeating-linear-gradient(
+          transparent,
+          transparent 40px,
+          rgba(0, 0, 0, 0.4) 42px,
+          rgba(255, 255, 255, 0.1) 43px,
+          rgba(0, 0, 0, 0.6) 45px,
+          transparent 46px
+        );
+        border-radius: inherit;
+        pointer-events: none;
+      }
 
-        #mechanism-view {
-            background-image: url('../../assets/images/study/study_mechanism.png');
-        }
+      .book-spine {
+        font-size: 2.5rem;
+        font-family: "Times New Roman", serif;
+        position: relative;
+        z-index: 2;
 
-        /* UI Elements */
-        .back-btn {
-            position: absolute;
-            bottom: 3rem;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 24px;
-            background: rgba(10, 10, 10, 0.85);
-            border: 1px solid #c9a959;
-            color: #c9a959;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-decoration: none;
-            font-size: 1rem;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-            z-index: 50;
-        }
+        /* Gold Foil Emboss Effect */
+        background: linear-gradient(
+          to bottom,
+          #f9f5bc 0%,
+          #c9a959 40%,
+          #8c6a28 60%,
+          #fff 100%
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        -webkit-text-fill-color: transparent;
 
-        .back-btn:hover {
-            background: rgba(200, 169, 89, 0.2);
-            box-shadow: 0 0 20px rgba(200, 169, 89, 0.5);
-            color: #fff;
-        }
+        /* Inner shadow for the indent, drop shadow for depth */
+        filter: drop-shadow(0px -1px 1px rgba(0, 0, 0, 0.8))
+          drop-shadow(0px 1px 0px rgba(255, 255, 255, 0.2));
+        transform: translateY(-10px);
+      }
 
-        /* Interactive Hotspots in Overview */
-        .hotspot {
-            position: absolute;
-            border: 2px solid transparent;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            z-index: 16;
-        }
+      /* Distinct Books */
+      #label-star {
+        --book-color: #1b3a4b;
+        height: 210px;
+      }
 
-        .hotspot:hover {
-            border-color: rgba(200, 169, 89, 0.8);
-            background: rgba(200, 169, 89, 0.1);
-            box-shadow: 0 0 30px rgba(200, 169, 89, 0.3) inset;
-        }
+      #label-sun {
+        --book-color: #6b2229;
+        height: 250px;
+      }
 
-        /* Hotspot positioning based on visual mapping */
-        #hotspot-desk {
-            top: 68%;
-            left: 4%;
-            width: 64%;
-            height: 30%;
-        }
+      #label-moon {
+        --book-color: #3e2723;
+        height: 230px;
+      }
 
-        #hotspot-bookshelf {
-            top: 2%;
-            left: 28%;
-            width: 30%;
-            height: 58%;
-        }
+      #label-compass {
+        --book-color: #2a3b2c;
+        height: 240px;
+      }
 
-        #hotspot-mechanism {
-            top: 3%;
-            left: 62%;
-            width: 18%;
-            height: 47%;
-        }
+      #label-hourglass {
+        --book-color: #5d4037;
+        height: 260px;
+      }
 
-        /* --------------- Desk View (The Clue) --------------- */
-        .journal-clue {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(244, 235, 216, 0.9);
-            padding: 3rem 4rem;
-            border-radius: 5px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), inset 0 0 50px rgba(139, 69, 19, 0.2);
-            color: #3e2723;
-            text-align: center;
-            max-width: 600px;
-            font-family: 'Courier New', Courier, monospace;
-            border: 1px solid #c9a959;
-            /* Slight tilt to look like paper resting on desk */
-            transform-origin: center;
-            animation: floatPaper 3s ease-in-out infinite alternate;
-        }
+      #label-skull {
+        --book-color: #212121;
+        height: 200px;
+      }
 
-        @keyframes floatPaper {
-            from {
-                transform: translate(-50%, -50%) rotate(-1deg);
-            }
+      .book:hover {
+        filter: brightness(1.25);
+      }
 
-            to {
-                transform: translate(-50%, -49%) rotate(1deg);
-            }
-        }
+      /* Puzzle Action: When hidden checkbox is checked, the paired label (book) is "pulled out" */
+      #book-star:checked ~ .study-scene #label-star,
+      #book-sun:checked ~ .study-scene #label-sun,
+      #book-moon:checked ~ .study-scene #label-moon,
+      #book-compass:checked ~ .study-scene #label-compass,
+      #book-hourglass:checked ~ .study-scene #label-hourglass,
+      #book-skull:checked ~ .study-scene #label-skull {
+        transform: scale(1.1) translateY(15px);
+        z-index: 5;
+        box-shadow:
+          0 20px 30px rgba(0, 0, 0, 0.9),
+          -15px 10px 20px rgba(0, 0, 0, 0.7);
+        border-top: 10px solid rgba(255, 255, 255, 0.05);
+      }
 
-        .clue-symbols {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-bottom: 2rem;
-            font-size: 3rem;
-        }
+      /* --------------- Mechanism View (The Win State) --------------- */
+      .secret-tunnel {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("../../assets/images/study/study_tunnel.png");
+        background-size: cover;
+        background-position: center;
+        z-index: 30;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /* Hide by default using clip-path so we can slide it open */
+        clip-path: inset(0 0 0 100%);
+        pointer-events: none;
+        transition: clip-path 3s cubic-bezier(0.86, 0, 0.07, 1);
+      }
 
-        .clue-symbol {
-            color: #5d4037;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-        }
+      .tunnel-entrance {
+        position: absolute;
+        top: 25%;
+        left: 60%;
+        width: 30%;
+        height: 60%;
+        border: 2px dashed rgba(200, 169, 89, 0.4);
+        border-radius: 10px;
+        color: transparent;
+        text-decoration: none;
+        transition: all 0.3s;
+      }
 
-        .clue-text {
-            font-size: 1.4rem;
-            line-height: 1.6;
-            font-weight: bold;
-            font-style: italic;
-            letter-spacing: 1px;
-            border-top: 1px dashed #8d6e63;
-            padding-top: 2rem;
-        }
+      .tunnel-entrance:hover {
+        border-color: rgba(200, 169, 89, 1);
+        background: rgba(200, 169, 89, 0.1);
+        box-shadow: 0 0 40px rgba(200, 169, 89, 0.4) inset;
+      }
 
-        /* --------------- Bookshelf View (The Puzzle) --------------- */
-        .shelf-container {
-            position: absolute;
-            top: 55%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 700px;
-            height: 350px;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            padding-bottom: 20px;
-            /* Removed artificial brown shelf */
-            box-shadow: 0 40px 50px rgba(0, 0, 0, 0.7);
-            background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.5));
-            border-radius: 5px 5px 0 0;
-            perspective: 800px;
-        }
+      .locked-message {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: rgba(220, 220, 220, 0.9);
+        font-size: 1.3rem;
+        letter-spacing: 2px;
+        text-align: center;
+        background: rgba(10, 5, 5, 0.85);
+        padding: 25px 50px;
+        border-radius: 8px;
+        border: 1px solid rgba(200, 169, 89, 0.3);
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 1);
+        transition: opacity 0.5s;
+        pointer-events: none;
+      }
 
-        .shelf {
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            gap: 5px;
-            width: 100%;
-            height: 100%;
-        }
-
-        .book {
-            margin-top: auto !important;
-            width: 75px;
-            /* Slightly wider */
-            height: 240px;
-            margin: 0 4px;
-            /* Base leather gradient, but more rounded */
-            background: linear-gradient(to right,
-                    /* Shadow edge */
-                    rgba(0, 0, 0, 0.8) 0%,
-                    /* Light hit */
-                    rgba(255, 255, 255, 0.15) 15%,
-                    /* Core color */
-                    transparent 25%,
-                    /* Core color */
-                    transparent 75%,
-                    /* Second light */
-                    rgba(255, 255, 255, 0.05) 85%,
-                    /* Right shadow edge */
-                    rgba(0, 0, 0, 0.9) 100%);
-            border-radius: 8px 8px 4px 4px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            transform-origin: bottom center;
-            /* Heavy realistic 3D shadowing */
-            box-shadow:
-                -10px 0 20px rgba(0, 0, 0, 0.9),
-                inset 5px 0 10px rgba(255, 255, 255, 0.1),
-                inset -5px 0 15px rgba(0, 0, 0, 0.5),
-                inset 0 15px 15px rgba(0, 0, 0, 0.7);
-            /* Leather texture overlay via repeating-linear-gradient */
-            background-color: var(--book-color, #4a151b);
-        }
-
-        /* The horizontal ribbands spanning the spine */
-        .book::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image:
-                repeating-linear-gradient(transparent,
-                    transparent 40px,
-                    rgba(0, 0, 0, 0.4) 42px,
-                    rgba(255, 255, 255, 0.1) 43px,
-                    rgba(0, 0, 0, 0.6) 45px,
-                    transparent 46px);
-            border-radius: inherit;
-            pointer-events: none;
-        }
-
-        .book-spine {
-            font-size: 2.5rem;
-            font-family: 'Times New Roman', serif;
-            position: relative;
-            z-index: 2;
-
-            /* Gold Foil Emboss Effect */
-            background: linear-gradient(to bottom, #f9f5bc 0%, #c9a959 40%, #8c6a28 60%, #fff 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            -webkit-text-fill-color: transparent;
-
-            /* Inner shadow for the indent, drop shadow for depth */
-            filter: drop-shadow(0px -1px 1px rgba(0, 0, 0, 0.8)) drop-shadow(0px 1px 0px rgba(255, 255, 255, 0.2));
-            transform: translateY(-10px);
-        }
-
-        /* Distinct Books */
-        #label-star {
-            --book-color: #1b3a4b;
-            height: 210px;
-        }
-
-        #label-sun {
-            --book-color: #6b2229;
-            height: 250px;
-        }
-
-        #label-moon {
-            --book-color: #3e2723;
-            height: 230px;
-        }
-
-        #label-compass {
-            --book-color: #2a3b2c;
-            height: 240px;
-        }
-
-        #label-hourglass {
-            --book-color: #5d4037;
-            height: 260px;
-        }
-
-        #label-skull {
-            --book-color: #212121;
-            height: 200px;
-        }
-
-        .book:hover {
-            filter: brightness(1.25);
-        }
-
-        /* Puzzle Action: When hidden checkbox is checked, the paired label (book) is "pulled out" */
-        #book-star:checked~.study-scene #label-star,
-        #book-sun:checked~.study-scene #label-sun,
-        #book-moon:checked~.study-scene #label-moon,
-        #book-compass:checked~.study-scene #label-compass,
-        #book-hourglass:checked~.study-scene #label-hourglass,
-        #book-skull:checked~.study-scene #label-skull {
-            transform: scale(1.1) translateY(15px);
-            z-index: 5;
-            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.9), -15px 10px 20px rgba(0, 0, 0, 0.7);
-            border-top: 10px solid rgba(255, 255, 255, 0.05);
-        }
-
-        /* --------------- Mechanism View (The Win State) --------------- */
+      /* ---------------- WIN CONDITION LOGIC ---------------- */
+      /* If correct books are checked AND decoy books are NOT checked */
+      #book-sun:checked
+        ~ #book-moon:checked
+        ~ #book-hourglass:checked
+        ~ #book-star:not(:checked)
+        ~ #book-compass:not(:checked)
+        ~ #book-skull:not(:checked)
+        ~ .study-scene
+        #mechanism-view
         .secret-tunnel {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('../../assets/images/study/study_tunnel.png');
-            background-size: cover;
-            background-position: center;
-            z-index: 30;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            /* Hide by default using clip-path so we can slide it open */
-            clip-path: inset(0 0 0 100%);
-            pointer-events: none;
-            transition: clip-path 3s cubic-bezier(0.86, 0, 0.07, 1);
+        clip-path: inset(0 0 0 0);
+        /* Slides open from right to left */
+        pointer-events: auto;
+      }
+
+      /* Hide the locked message when solved */
+      #book-sun:checked
+        ~ #book-moon:checked
+        ~ #book-hourglass:checked
+        ~ #book-star:not(:checked)
+        ~ #book-compass:not(:checked)
+        ~ #book-skull:not(:checked)
+        ~ .study-scene
+        #mechanism-view
+        .locked-message {
+        opacity: 0;
+      }
+
+      /* Mobile Responsiveness */
+      @media (max-width: 900px), (max-height: 600px) {
+        .shelf-container {
+          transform: translate(-50%, -50%)
+            scale(min(calc(100vw / 900), calc(100vh / 600)));
         }
 
-        .tunnel-entrance {
-            position: absolute;
-            top: 25%;
-            left: 60%;
-            width: 30%;
-            height: 60%;
-            border: 2px dashed rgba(200, 169, 89, 0.4);
-            border-radius: 10px;
-            color: transparent;
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-
-        .tunnel-entrance:hover {
-            border-color: rgba(200, 169, 89, 1);
-            background: rgba(200, 169, 89, 0.1);
-            box-shadow: 0 0 40px rgba(200, 169, 89, 0.4) inset;
+        .journal-clue {
+          transform: translate(-50%, -50%)
+            scale(min(calc(100vw / 800), calc(100vh / 600)));
         }
 
         .locked-message {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: rgba(220, 220, 220, 0.9);
-            font-size: 1.3rem;
-            letter-spacing: 2px;
-            text-align: center;
-            background: rgba(10, 5, 5, 0.85);
-            padding: 25px 50px;
-            border-radius: 8px;
-            border: 1px solid rgba(200, 169, 89, 0.3);
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 1);
-            transition: opacity 0.5s;
-            pointer-events: none;
+          transform: translate(-50%, -50%)
+            scale(min(calc(100vw / 800), calc(100vh / 600)));
         }
-
-        /* ---------------- WIN CONDITION LOGIC ---------------- */
-        /* If correct books are checked AND decoy books are NOT checked */
-        #book-sun:checked~#book-moon:checked~#book-hourglass:checked~#book-star:not(:checked)~#book-compass:not(:checked)~#book-skull:not(:checked)~.study-scene #mechanism-view .secret-tunnel {
-            clip-path: inset(0 0 0 0);
-            /* Slides open from right to left */
-            pointer-events: auto;
-        }
-
-        /* Hide the locked message when solved */
-        #book-sun:checked~#book-moon:checked~#book-hourglass:checked~#book-star:not(:checked)~#book-compass:not(:checked)~#book-skull:not(:checked)~.study-scene #mechanism-view .locked-message {
-            opacity: 0;
-        }
-
-        /* Mobile Responsiveness */
-        @media (max-width: 900px),
-        (max-height: 600px) {
-            .shelf-container {
-                transform: translate(-50%, -50%) scale(min(calc(100vw / 900), calc(100vh / 600)));
-            }
-
-            .journal-clue {
-                transform: translate(-50%, -50%) scale(min(calc(100vw / 800), calc(100vh / 600)));
-            }
-
-            .locked-message {
-                transform: translate(-50%, -50%) scale(min(calc(100vw / 800), calc(100vh / 600)));
-            }
-        }
+      }
     </style>
-</head>
+  </head>
 
-<body>
-
+  <body>
     <!-- CSS Combination Lock Checkboxes -->
-    <input type="checkbox" id="book-sun" class="puzzle-state">
-    <input type="checkbox" id="book-moon" class="puzzle-state">
-    <input type="checkbox" id="book-hourglass" class="puzzle-state">
-    <input type="checkbox" id="book-star" class="puzzle-state">
-    <input type="checkbox" id="book-compass" class="puzzle-state">
-    <input type="checkbox" id="book-skull" class="puzzle-state">
+    <input type="checkbox" id="book-sun" class="puzzle-state" />
+    <input type="checkbox" id="book-moon" class="puzzle-state" />
+    <input type="checkbox" id="book-hourglass" class="puzzle-state" />
+    <input type="checkbox" id="book-star" class="puzzle-state" />
+    <input type="checkbox" id="book-compass" class="puzzle-state" />
+    <input type="checkbox" id="book-skull" class="puzzle-state" />
 
     <!-- Main Game Container -->
     <div class="study-scene">
+      <!-- View 1: Overview -->
+      <div id="overview" class="view">
+        <a
+          href="#desk-view"
+          class="hotspot"
+          id="hotspot-desk"
+          title="Investigate Desk"
+        ></a>
+        <a
+          href="#bookshelf-view"
+          class="hotspot"
+          id="hotspot-bookshelf"
+          title="Investigate Bookshelf"
+        ></a>
+        <a
+          href="#mechanism-view"
+          class="hotspot"
+          id="hotspot-mechanism"
+          title="Investigate Mechanism"
+        ></a>
+      </div>
 
-        <!-- View 1: Overview -->
-        <div id="overview" class="view">
-            <a href="#desk-view" class="hotspot" id="hotspot-desk" title="Investigate Desk"></a>
-            <a href="#bookshelf-view" class="hotspot" id="hotspot-bookshelf" title="Investigate Bookshelf"></a>
-            <a href="#mechanism-view" class="hotspot" id="hotspot-mechanism" title="Investigate Mechanism"></a>
+      <!-- View 2: The Desk (Clue) -->
+      <div id="desk-view" class="view">
+        <div class="journal-clue">
+          <div class="clue-symbols">
+            <span class="clue-symbol" title="Sun">☀️</span>
+            <span class="clue-symbol" title="Crescent Moon">🌙</span>
+            <span class="clue-symbol" title="Hourglass">⏳</span>
+          </div>
+          <div class="clue-text">
+            "Only when the heavens align will the path reveal itself."
+          </div>
+        </div>
+        <a href="#overview" class="back-btn">Return to Study</a>
+      </div>
+
+      <!-- View 3: The Bookshelf (Puzzle) -->
+      <div id="bookshelf-view" class="view">
+        <div class="shelf-container">
+          <div class="shelf">
+            <label for="book-star" class="book" id="label-star">
+              <span class="book-spine">★</span>
+            </label>
+            <label for="book-sun" class="book" id="label-sun">
+              <span class="book-spine">☼</span>
+            </label>
+            <label for="book-moon" class="book" id="label-moon">
+              <span class="book-spine">☾</span>
+            </label>
+            <label for="book-compass" class="book" id="label-compass">
+              <span class="book-spine study-spine-compass">✛</span>
+            </label>
+            <label for="book-hourglass" class="book" id="label-hourglass">
+              <span class="book-spine">⧖</span>
+            </label>
+            <label for="book-skull" class="book" id="label-skull">
+              <span class="book-spine">☠</span>
+            </label>
+          </div>
+        </div>
+        <a href="#overview" class="back-btn">Return to Study</a>
+      </div>
+
+      <!-- View 4: The Mechanism (Lock/Win) -->
+      <div id="mechanism-view" class="view">
+        <!-- The sliding wall reveal -->
+        <div class="secret-tunnel">
+          <!-- Transition to next chapter placeholder -->
+          <a
+            href="study-complete.html"
+            class="tunnel-entrance"
+            title="Enter the Dark Passage"
+            >Enter Passage</a
+          >
         </div>
 
-        <!-- View 2: The Desk (Clue) -->
-        <div id="desk-view" class="view">
-            <div class="journal-clue">
-                <div class="clue-symbols">
-                    <span class="clue-symbol" title="Sun">☀️</span>
-                    <span class="clue-symbol" title="Crescent Moon">🌙</span>
-                    <span class="clue-symbol" title="Hourglass">⏳</span>
-                </div>
-                <div class="clue-text">
-                    "Only when the heavens align will the path reveal itself."
-                </div>
-            </div>
-            <a href="#overview" class="back-btn">Return to Study</a>
+        <div class="locked-message">
+          The ancient gears remain stubbornly locked.<br />
+          <span
+            style="
+              font-size: 0.9rem;
+              color: #a98050;
+              margin-top: 10px;
+              display: block;
+            "
+            >They seem connected to the heavy bookshelf.</span
+          >
         </div>
 
-        <!-- View 3: The Bookshelf (Puzzle) -->
-        <div id="bookshelf-view" class="view">
-            <div class="shelf-container">
-                <div class="shelf">
-                    <label for="book-star" class="book" id="label-star">
-                        <span class="book-spine">★</span>
-                    </label>
-                    <label for="book-sun" class="book" id="label-sun">
-                        <span class="book-spine">☼</span>
-                    </label>
-                    <label for="book-moon" class="book" id="label-moon">
-                        <span class="book-spine">☾</span>
-                    </label>
-                    <label for="book-compass" class="book" id="label-compass">
-                        <span class="book-spine" style="font-size: 3rem; transform: translateY(-7px);">✛</span>
-                    </label>
-                    <label for="book-hourglass" class="book" id="label-hourglass">
-                        <span class="book-spine">⧖</span>
-                    </label>
-                    <label for="book-skull" class="book" id="label-skull">
-                        <span class="book-spine">☠</span>
-                    </label>
-                </div>
-            </div>
-            <a href="#overview" class="back-btn">Return to Study</a>
-        </div>
-
-        <!-- View 4: The Mechanism (Lock/Win) -->
-        <div id="mechanism-view" class="view">
-            <!-- The sliding wall reveal -->
-            <div class="secret-tunnel">
-                <!-- Transition to next chapter placeholder -->
-                <a href="study-complete.html" class="tunnel-entrance" title="Enter the Dark Passage">Enter Passage</a>
-            </div>
-
-            <div class="locked-message">
-                The ancient gears remain stubbornly locked.<br>
-                <span style="font-size: 0.9rem; color: #a98050; margin-top: 10px; display: block;">They seem connected
-                    to the heavy bookshelf.</span>
-            </div>
-
-            <a href="#overview" class="back-btn">Return to Study</a>
-        </div>
-
+        <a href="#overview" class="back-btn">Return to Study</a>
+      </div>
     </div>
-
-</body>
-
+  </body>
 </html>
