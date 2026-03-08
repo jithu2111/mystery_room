@@ -425,6 +425,22 @@
         #book-sun:checked~#book-moon:checked~#book-hourglass:checked~#book-star:not(:checked)~#book-compass:not(:checked)~#book-skull:not(:checked)~.study-scene #mechanism-view .locked-message {
             opacity: 0;
         }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 900px),
+        (max-height: 600px) {
+            .shelf-container {
+                transform: translate(-50%, -50%) scale(min(calc(100vw / 900), calc(100vh / 600)));
+            }
+
+            .journal-clue {
+                transform: translate(-50%, -50%) scale(min(calc(100vw / 800), calc(100vh / 600)));
+            }
+
+            .locked-message {
+                transform: translate(-50%, -50%) scale(min(calc(100vw / 800), calc(100vh / 600)));
+            }
+        }
     </style>
 </head>
 

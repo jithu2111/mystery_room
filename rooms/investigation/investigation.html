@@ -518,6 +518,14 @@
             border: 1px solid rgba(232, 186, 48, 0.3);
             pointer-events: none;
         }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 1250px),
+        (max-height: 700px) {
+            .board-wrapper {
+                transform: scale(min(calc(100vw / 1250), calc(100vh / 700)));
+            }
+        }
     </style>
 </head>
 

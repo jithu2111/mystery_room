@@ -60,17 +60,19 @@
         /* Main Image Container (Letterboxed) */
         .lit-image-layer {
             position: relative;
-            /* Aspect ratio 1/1 because Foyer.png is square */
-            aspect-ratio: 1 / 1;
-            width: 100%;
-            /* Constrain to screen size and cap at 800px to preserve clarity */
-            max-width: min(90vh, 100vw, 800px);
+            /* Layout size fixed at 800x800 for absolute positioning predictability */
+            width: 800px;
+            height: 800px;
+            /* Dynamically scaled down to fit screen */
+            transform: scale(min(calc(90vh / 800), calc(100vw / 800), 1));
+            transform-origin: center center;
             background-image: url('../../assets/images/Foyer.png');
             background-size: contain;
             background-position: center;
             background-repeat: no-repeat;
             box-shadow: 0 0 100px rgba(0, 0, 0, 0.95), inset 0 0 40px rgba(0, 0, 0, 0.6);
             border-radius: 8px;
+            flex-shrink: 0;
         }
 
         /* Interactive Elements Overlay */
